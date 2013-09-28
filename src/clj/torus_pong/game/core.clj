@@ -15,13 +15,13 @@
 
 (defn move-up
   [position]
-  (if (< (+ position (/ params/paddle-size 2)) params/game-height)
+  (if (< (+ position (/ params/paddle-height 2)) params/game-height)
     (reduce min [(+ position params/distance-paddle-moves-per-tick) params/game-height])
     position))
 
 (defn move-down
   [position]
-  (if (> (- position (/ params/paddle-size 2)) 0)
+  (if (> (- position (/ params/paddle-height 2)) 0)
     (reduce max [(- position params/distance-paddle-moves-per-tick) 0])
     position))
 

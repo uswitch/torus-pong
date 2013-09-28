@@ -1,5 +1,7 @@
 (ns torus-pong.game.params)
-(def paddle-size 100)
+
+(def paddle-height 100)
+(def paddle-width 20)
 
 (def ms-to-move-paddle-from-top-to-bottom 3000)
 
@@ -12,6 +14,6 @@
 
 (def max-commands-per-tick 10)
 
-(def distance-paddle-moves-per-tick (/ (- game-height paddle-size)
+(def distance-paddle-moves-per-tick (/ (- game-height paddle-height)
                                        (/ ms-to-move-paddle-from-top-to-bottom tick-ms)
                                         max-commands-per-tick))
