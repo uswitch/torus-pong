@@ -7,7 +7,7 @@
             :id id}
    :balls [{:p {:x  (int (rand params/game-width))
                 :y  (int (rand params/game-height))}
-            :v  {:x 10 :y 10}}]})
+            :v  {:x 100 :y 100}}]})
 
 (def initial-game-state
   {:fields []})
