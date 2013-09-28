@@ -2,22 +2,29 @@
   (:require [clojure.core.async :refer [chan]]
             [com.keminglabs.jetty7-websockets-async.core :as ws]
             [ring.adapter.jetty :refer [run-jetty]]
-            [torus-pong.server :as server]))
+            [torus-pong.server :as server]
+            [torus-pong.engine :as engine]))
 
 (defn init
   []
-  {:connection-chan (chan)})
+  {
+   ;; channel for new websocket connections
+   :connection-chan (chan)
+
+   ;; channel for all commands from clients
+   :command-chan    (chan)})
 
 (defn jetty-configurator
   [system]
   (ws/configurator (system :connection-chan)))
 
-
 (defn start!
   [system]
   (println "Starting system")
-  
-  (server/spawn-connection-process! (system :connection-chan))
+
+  (engine/spawn-engine-process! (:command-chan system))
+  (server/spawn-connection-process! (:connection-chan system)
+                                    (:command-chan system))
   
   (assoc system
     :server (run-jetty server/handler
