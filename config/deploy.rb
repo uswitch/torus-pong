@@ -16,6 +16,11 @@ server '146.185.148.131', :app, :web, :db, :primary => true
 
 namespace :deploy do
 
+  desc "Restart Application"
+  task :restart, :roles => :app, :except => { :no_release => true } do
+    api.restart
+  end
+
   desc "Build application as an uber jar"
   task :build_uber_jar do
     run("cd #{release_path}; lein uberjar")
@@ -26,6 +31,7 @@ namespace :deploy do
 end
 
 namespace :api do
+
   task :install do
     put File.read(File.join(File.dirname(__FILE__), %w[upstart torus-pong.conf])), '/tmp/torus-pong.conf', :mode => '644'
     sudo "mv -f /tmp/torus-pong.conf /etc/init/torus-pong.conf"
