@@ -1,7 +1,7 @@
 (ns torus-pong.client
   (:require-macros [cljs.core.async.macros :as m :refer [go]])
   (:require [cljs.core.async :refer [alts! >! <! timeout close!]]
-            [torus-pong.websocket :refer [websocket-chan]]))
+            [torus-pong.async.websocket :refer [websocket-chan]]))
 
 
 
