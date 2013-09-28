@@ -1,5 +1,5 @@
 (ns torus-pong.system
-  (:require [clojure.core.async :refer [chan]]
+  (:require [clojure.core.async :refer [chan close!]]
             [com.keminglabs.jetty7-websockets-async.core :as ws]
             [ring.adapter.jetty :refer [run-jetty]]
             [torus-pong.server :as server]
@@ -42,5 +42,8 @@
   (println "Stopping system")
   (when-let [server (:server system)]
     (.stop server))
+  (close! (:command-chan system))
+  (close! (:game-state-chan system))
+  (close! (:connection-chan system))
 
   (dissoc system :server))

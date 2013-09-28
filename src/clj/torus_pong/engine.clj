@@ -11,15 +11,23 @@
         (let [[v c] (alts! [timer command-chan] :priority true)]
           (condp = c
             command-chan (do (println "Got command " v)
-                             (recur game-state (conj commands v) timer))
+                             (when v
+                               (recur game-state (conj commands v) timer)))
             timer        (do (println "TIMEOUT!" commands)
                              (let [updated-game-state (game-core/advance game-state commands)]
                                (>! game-state-channel updated-game-state)
-                               (recur updated-game-state [] (timeout params/tick-ms)))))))))
+                               (recur updated-game-state [] (timeout params/tick-ms)))))))
+
+      (println "Exiting engine process")
+
+
+      ))
 
 (defn game-state-emitter
   [game-state-channel]
   (go
    (loop [game-state (<! game-state-channel)]
      (println "Reading game state")
-     (recur (<! game-state-channel)))))
+     (when game-state
+       (recur (<! game-state-channel))))
+   (println "Exiting game state emitter loop")))
