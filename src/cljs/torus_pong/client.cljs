@@ -47,6 +47,6 @@
 (defn ^:export run
   []
   (.log js/console "pong!")
-  (let [vis (visual.Visualiser. "canvas" game-params/game-height)
+  (let [vis (visual.Visualiser. "canvas" game-params/game-height 100)
         {:keys [in out]} (websocket/connect! (str "ws://" host))]
     (spawn-client-process! in out (command-chan) vis)))
