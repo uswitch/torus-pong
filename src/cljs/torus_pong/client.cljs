@@ -5,6 +5,7 @@
             [torus-pong.async.websocket :as websocket]
             [torus-pong.async.utils :refer [event-chan map-chan]]
             [torus-pong.utils :refer [log]]
+            [torus-pong.game.params :as game-params]
             [visual.Visualiser]))
 
 ;; commands
@@ -46,6 +47,6 @@
 (defn ^:export run
   []
   (.log js/console "pong!")
-  (let [vis (visual.Visualiser. "canvas")
+  (let [vis (visual.Visualiser. "canvas" game-params/game-height)
         {:keys [in out]} (websocket/connect! (str "ws://" host))]
     (spawn-client-process! in out (command-chan) vis)))

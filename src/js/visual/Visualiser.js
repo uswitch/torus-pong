@@ -1,7 +1,8 @@
 goog.provide('visual.Visualiser');
 
-visual.Visualiser = function(canvasId) {
+visual.Visualiser = function(canvasId, gameHeight) {
     this.canvas = document.getElementById(canvasId);
+    this.gameHeight = gameHeight;
 };
 
 visual.Visualiser.prototype.update = function(data) {
@@ -17,6 +18,10 @@ visual.Visualiser.prototype.update = function(data) {
     this.drawBall(ctx, 50, 60);
     this.drawBall(ctx, 150, 200);
     this.drawBall(ctx, 450, 10);
+};
+
+visual.Visualiser.prototype.y = function(gameY) {
+    return this.canvas.height - gameY * (this.canvas.height / this.gameHeight);
 };
 
 visual.Visualiser.prototype.drawPlayer = function(ctx, x, y) {
