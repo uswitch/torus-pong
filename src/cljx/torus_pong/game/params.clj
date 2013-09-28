@@ -9,5 +9,8 @@
 
 (def tick-ms (/ 1000 ticks-per-sec))
 
+(def max-commands-per-tick 10)
+
 (def distance-paddle-moves-per-tick (/ (- game-height paddle-size)
-                                       (/ ms-to-move-paddle-from-top-to-bottom tick-ms)))
+                                       (/ ms-to-move-paddle-from-top-to-bottom tick-ms)
+                                        max-commands-per-tick))
