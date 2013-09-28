@@ -9,7 +9,7 @@
                  "https://oss.sonatype.org/content/groups/public/"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-1909"]
-                 [core.async "0.1.0-SNAPSHOT"]
+                 [org.clojure/core.async "0.1.222.0-83d0c2-alpha"]
                  [ring/ring-jetty-adapter "1.2.0"]
                  [ring/ring-servlet "1.2.0"]
                  [compojure "1.1.5" :exclusions [ring/ring-core]]
