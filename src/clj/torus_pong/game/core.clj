@@ -154,7 +154,7 @@
   (let [fields (:fields game-state)
         field-partitions (partition
                           3 1 (concat
-                               [(first fields)] fields [(last fields)]))]
+                               [(last fields)] fields [(first fields)]))]
     (assoc game-state
       :fields
       (mapv update-ball-field-partition field-partitions))))
