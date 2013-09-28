@@ -6,13 +6,22 @@
             [visual.Visualiser]))
 
 
-;;vis (visual.Visualiser. "canvas" game-params/game-height 100)
 
 (defn create!
   []
-  (let [c (chan (sliding-buffer 1))]
+  (let [c (chan (sliding-buffer 1))
+        v (visual.Visualiser. "canvas"
+                              game-params/game-height
+                              game-params/paddle-height
+                              game-params/paddle-width)]
     (go (loop [player-game-state (<! c)]
           (log ["Got player-game-state" player-game-state])
+          (let [{:keys [player left-opponent right-opponent]} player-game-state]
+            (doto v
+              (.clear)
+              (.drawPlayer (:position player))
+              (.drawLeftOpponent (:position left-opponent))
+              (.drawRightOpponent (:position right-opponent))))
           (recur (<! c))))
     c))
 
