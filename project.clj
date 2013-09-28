@@ -11,4 +11,12 @@
                  [compojure "1.1.5" :exclusions [ring/ring-core]]
                  [org.clojure/core.match "0.2.0-rc5"]
                  [com.keminglabs/jetty7-websockets-async "0.1.0"]]
-  )
+  :source-paths ["src/clj"
+                 "src/cljs"]
+  :plugins [[lein-cljsbuild "0.3.3"]]
+  :cljsbuild {:builds
+              [{:notify-command ["terminal-notifier" "-title" "lein-cljsbuild" "-message"]
+                :source-paths ["src/cljs"]
+                :compiler {:output-to "resources/public/pong.js"
+                           :pretty-print true
+                           :optimizations :whitespace}}]})
