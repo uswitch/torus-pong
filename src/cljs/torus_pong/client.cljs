@@ -18,7 +18,7 @@
 
 (defn command-chan
   []
-  (event-chan "keyup" key-event->command))
+  (event-chan "keydown" key-event->command))
 
 
 ;; client process
