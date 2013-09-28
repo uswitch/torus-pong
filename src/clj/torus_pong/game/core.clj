@@ -20,13 +20,13 @@
 (defn move-up
   [position]
   (if (< (+ position (/ params/paddle-height 2)) params/game-height)
-    (reduce min [(+ position (long params/distance-paddle-moves-per-tick)) params/game-height])
+    (reduce min [(+ position params/distance-paddle-moves-per-tick) params/game-height])
     position))
 
 (defn move-down
   [position]
   (if (> (- position (/ params/paddle-height 2)) 0)
-    (reduce max [(- position (long params/distance-paddle-moves-per-tick)) 0])
+    (reduce max [(- position params/distance-paddle-moves-per-tick) 0])
     position))
 
 (defmulti handle-command
@@ -58,10 +58,15 @@
             (handle-command current-state command))
           game-state commands))
 
+(defn abs
+  [i]
+  (if (> 0 i) i
+      (- i)))
+
 (defn player-collision?
   [ball player]
-  (let [x-distance (Math/abs (- (/ params/game-width 2) (-> ball :p :x)))
-        y-distance (Math/abs (- (player :position) (-> ball :p :y)))]
+  (let [x-distance (abs (- (/ params/game-width 2) (-> ball :p :x)))
+        y-distance (abs (- (player :position) (-> ball :p :y)))]
     (and (< x-distance (+ (/ params/paddle-width 2) params/ball-radius))
          (< y-distance (+ (/ params/paddle-height 2) params/ball-radius)))))
 
