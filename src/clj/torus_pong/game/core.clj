@@ -3,7 +3,11 @@
 
 (defn initial-field-state
   [id]
-  {:player {:position (/ params/game-height 2) :id id}})
+  {:player {:position (/ params/game-height 2)
+            :id id}
+   :balls [{:p {:x  (int (rand params/game-width))
+                :y  (int (rand params/game-height))}
+            :v  {:x 1 :y 1}}]})
 
 (def initial-game-state
   {:fields []})
@@ -54,10 +58,31 @@
             (handle-command current-state command))
           game-state commands))
 
+(defn move-ball
+  [ball]
+  (let [current-x-pos (-> ball :p :x)
+        current-y-pos (-> ball :p :y)
+        current-x-vel (-> ball :v :x)
+        current-y-vel (-> ball :v :y)]
+    {:p {:x (+ current-x-pos current-x-vel)
+         :y (+ current-y-pos current-y-vel)}
+     :v {:x current-x-vel
+         :y current-y-vel}}))
+
+(defn move-balls-in-field
+  [field]
+  (update-in field [:balls] (partial map move-ball)))
+
+(defn move-balls
+  [game-state]
+  (update-in game-state [:fields] (partial map move-balls-in-field)))
+
 (defn advance
   "Given a game-state and some inputs, advance the game-state one
   tick"
   [game-state commands]
-  (let [new-game-state (handle-commands game-state commands)]
+  (let [new-game-state (-> game-state
+                           (handle-commands commands)
+                           (move-balls))]
     (println new-game-state)
     new-game-state))
