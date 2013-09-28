@@ -49,3 +49,22 @@ namespace :api do
     sudo "restart torus-pong"
   end
 end
+
+namespace :nginx do
+
+  task :restart do
+    sudo "/etc/init.d/nginx restart"
+  end
+
+  task :stop do
+    sudo "/etc/init.d/nginx stop"
+  end
+
+  task :start do
+    sudo "/etc/init.d/nginx start"
+  end
+
+  task :reload do
+    sudo "/etc/init.d/nginx reload"
+  end
+end
