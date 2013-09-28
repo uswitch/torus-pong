@@ -6,14 +6,6 @@
             [torus-pong.utils :refer [log]]))
 
 
-
-(defn ws-test
-  []
-  (let [{:keys [in out]} (websocket/connect! "ws://localhost:8080")]
-    (go (<! (timeout 100))
-        (>! in "Hello!")
-        (close! in))))
-
 ;; commands
 
 (defn key-event->command
@@ -32,13 +24,16 @@
 ;; client process
 
 (defn spawn-client-process!
-  [command-chan]
+  [ws-in ws-out command-chan]
   (go (while true
-        (let [[v c] (alts! [command-chan])]
+        (let [[v c] (alts! [ws-out command-chan])]
           (condp = c
-            command-chan (do (log v)))))))
+            ws-out       (do (log ["Got message from server" v]))
+            command-chan (do (log ["Captured command from user, sending to server" v])
+                             (>! ws-in v)))))))
 
 (defn ^:export run
   []
   (.log js/console "pong!")
-  (spawn-client-process! (command-chan)))
+  (let [{:keys [in out]} (websocket/connect! "ws://localhost:8080")]
+    (spawn-client-process! in out (command-chan))))
