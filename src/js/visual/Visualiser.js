@@ -52,10 +52,10 @@ visual.Visualiser.prototype.drawPaddle = function(gameX, position) {
     this.scaleY(this.paddleHeight));
 };
 
-visual.Visualiser.prototype.drawBall = function(ctx, x, y) {
+visual.Visualiser.prototype.drawBall = function(gameX, gameY) {
 
-  ctx.fillStyle="#fff";
-  ctx.fillRect(x,y,10,10);
+  this.ctx.fillStyle = "#fff";
+  this.ctx.fillRect(this.x(gameX), this.y(gameY), 20, 20);
 
 };
 

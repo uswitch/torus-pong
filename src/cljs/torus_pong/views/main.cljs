@@ -9,6 +9,20 @@
 
 
 
+
+(defn update-view
+  [v player-game-state]
+  (let [{:keys [player left-opponent right-opponent]} player-game-state]
+    (doto v
+      (.clear)
+      (.drawPlayer        (-> player :player :position))
+      (.drawLeftOpponent  (-> left-opponent :player :position))
+      (.drawRightOpponent (-> right-opponent :player :position)))
+    (doseq [ball (-> player :balls)]
+      (let [{:keys [x y]} (:p ball)]
+        (.drawBall v x y)))))
+
+
 (defn create!
   []
   (let [c (chan (sliding-buffer 1))
@@ -19,12 +33,7 @@
                               game-params/paddle-width)]
     (go (loop [player-game-state (<! c)]
           (log ["Got player-game-state" player-game-state])
-          (let [{:keys [player left-opponent right-opponent]} player-game-state]
-            (doto v
-              (.clear)
-              (.drawPlayer        (-> player :player :position))
-              (.drawLeftOpponent  (-> left-opponent :player :position))
-              (.drawRightOpponent (-> right-opponent :player :position))))
+          (update-view v player-game-state)
           (recur (<! c))))
     c))
 
