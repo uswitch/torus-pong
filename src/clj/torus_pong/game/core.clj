@@ -13,6 +13,18 @@
   (some (fn [[idx v]] (if (= v id) idx))
         (map-indexed (fn [ix v] [ix (-> v :player :id)]) (:fields game-state))))
 
+(defn move-up
+  [position]
+  (if (< position params/game-height)
+    (inc position)
+    position))
+
+(defn move-down
+  [position]
+  (if (> position 0)
+    (dec position)
+    position))
+
 (defmulti handle-command
   (fn [game-state command]
     (first command)))
@@ -24,12 +36,12 @@
 (defmethod handle-command :player/up
   [game-state [command id]]
   (let [field-index (find-field-index game-state id)]
-    (update-in game-state [:fields field-index :player :position] inc)))
+    (update-in game-state [:fields field-index :player :position] move-up)))
 
 (defmethod handle-command :player/down
   [game-state [command id]]
   (let [field-index (find-field-index game-state id)]
-    (update-in game-state [:fields field-index :player :position] dec)))
+    (update-in game-state [:fields field-index :player :position] move-down)))
 
 (defn handle-commands
   [game-state commands]
