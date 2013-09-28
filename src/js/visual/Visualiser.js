@@ -27,11 +27,11 @@ visual.Visualiser.prototype.drawRightOpponent = function(position) {
 };
 
 visual.Visualiser.prototype.scaleX = function(gameX) {
-  return gameX * (this.canvas.width / ((this.paddleWidth*2)+(this.gameWidth*2)));
+  return gameX * (this.canvas.width / (this.paddleWidth + (this.gameWidth*2)));
 };
 
 visual.Visualiser.prototype.x = function(gameX) {
-  return this.scaleX(this.paddleWidth/2 + gameX);
+  return this.scaleX(gameX);
 };
 
 visual.Visualiser.prototype.scaleY = function(gameY) {
