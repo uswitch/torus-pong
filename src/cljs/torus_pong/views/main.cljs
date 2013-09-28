@@ -7,11 +7,13 @@
 
 
 
+
 (defn create!
   []
   (let [c (chan (sliding-buffer 1))
         v (visual.Visualiser. "canvas"
                               game-params/game-height
+                              game-params/game-width
                               game-params/paddle-height
                               game-params/paddle-width)]
     (go (loop [player-game-state (<! c)]
