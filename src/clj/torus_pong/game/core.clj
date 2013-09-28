@@ -14,18 +14,16 @@
         (map-indexed (fn [ix v] [ix (-> v :player :id)]) (:fields game-state))))
 
 (defn move-up
-  []
-  (fn [position]
-    (if (< position params/game-height)
-      (inc position)
-      position)))
+  [position]
+  (if (< position params/game-height)
+    (inc position)
+    position))
 
 (defn move-down
-  []
-  (fn [position]
-    (if (> position 0)
-      (dec position)
-      position)))
+  [position]
+  (if (> position 0)
+    (dec position)
+    position))
 
 (defmulti handle-command
   (fn [game-state command]
