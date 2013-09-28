@@ -8,6 +8,7 @@
   [game-state commands]
   (reduce
    (fn [game-state [command]]
+     (println "Command to process: " command)
      (let [movement-fn (if (= :player/up command) inc dec)]
        (update-in game-state [:position] movement-fn)))
    game-state
