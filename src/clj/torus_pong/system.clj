@@ -17,7 +17,7 @@
   [system]
   (println "Starting system")
   
-  (server/spawn-connection-process (system :connection-chan))
+  (server/spawn-connection-process! (system :connection-chan))
   
   (assoc system
     :server (run-jetty server/handler

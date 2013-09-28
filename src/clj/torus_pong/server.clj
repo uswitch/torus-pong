@@ -7,7 +7,7 @@
 (def handler
   (routes (route/files "/")))
 
-(defn spawn-client-process
+(defn spawn-client-process!
   [request in out]
   (go (loop [msg (<! out)]
         (when msg
@@ -15,11 +15,11 @@
           (recur (<! out))))
       (println "Client process terminating")))
 
-(defn spawn-connection-process
+(defn spawn-connection-process!
   [conn-chan]
   (go (loop [{:keys [request in out] :as conn} (<! conn-chan)]
         (when conn
           (println "Spawning new client process for" (:remote-addr request))
-          (spawn-client-process request in out)
+          (spawn-client-process! request in out)
           (recur (<! conn-chan))))
       (println "Connection process terminating")))
