@@ -4,7 +4,7 @@ set :keep_releases, 3
 set :deploy_to,           "/var/www/#{application}"
 set :repository_cache,    "#{application}_cache"
 
-set :repository,  "https://tgk@deveo.com/clojurecup/projects/pong/repositories/git/torus-pong"
+set :repository,  "deveo@deveo.com:clojurecup/projects/pong/repositories/git/torus-pong"
 set :scm, :git
 set :ssh_options, {:forward_agent => true}
 set :use_sudo, false
