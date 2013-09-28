@@ -1,5 +1,6 @@
 (ns user
-  (:require [torus-pong.system :refer [init start! stop!]]))
+  (:require [torus-pong.system :refer [init start! stop!]]
+            [clojure.tools.namespace.repl :refer (refresh refresh-all)]))
 
 (defonce system nil)
 
@@ -9,3 +10,7 @@
   (when system
     (alter-var-root #'system stop!))
   (alter-var-root #'system (constantly (start! (init)))))
+
+(defn reset
+  []
+  (refresh :after 'user/go))
