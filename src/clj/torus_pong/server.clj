@@ -19,13 +19,14 @@
 
 
 (defn spawn-client-process!
-  [ws-request ws-in ws-out command-chan]
+  [ws-request ws-in ws-out command-chan id]
   (go
+   (>! command-chan [:player/join id])
    (loop [msg (<! ws-out)]
         (when msg
           (let [command (edn/read-string msg)]
             (println "Got message from client: " command)
-            (>! command-chan command)
+            (>! command-chan (conj command id))
             (recur (<! ws-out)))))
       (println "Client process terminating")))
 
@@ -37,6 +38,6 @@
             (println "Spawning new client process for" (:remote-addr request))
             (swap! clients assoc id in)
             (println @clients)
-            (spawn-client-process! request in out command-chan)
+            (spawn-client-process! request in out command-chan id)
             (recur (<! conn-chan)))))
       (println "Connection process terminating")))
