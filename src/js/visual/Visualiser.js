@@ -10,7 +10,7 @@ visual.Visualiser.prototype.update = function(data) {
     ctx.clearRect(0,0,this.width,this.height);
 
     this.drawPlayer(ctx, 10, 10);
-    this.drawPlayer(ctx, this.canvas.width - 10, 50);
+    this.drawPlayer(ctx, this.canvas.width - 20, 50);
     this.drawPlayer(ctx, this.canvas.width/2, 25);
 
     this.drawBall(ctx, 30, 40);
