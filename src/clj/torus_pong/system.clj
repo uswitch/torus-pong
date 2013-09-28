@@ -12,7 +12,10 @@
    :connection-chan (chan)
 
    ;; channel for all commands from clients
-   :command-chan    (chan)})
+   :command-chan    (chan)
+
+      ;; channel for communicating the game state
+   :game-state-chan    (chan)})
 
 (defn jetty-configurator
   [system]
@@ -22,10 +25,11 @@
   [system]
   (println "Starting system")
 
-  (engine/spawn-engine-process! (:command-chan system))
+  (engine/spawn-engine-process! (:command-chan system) (:game-state-chan system))
+  (engine/game-state-emitter    (:game-state-chan system))
   (server/spawn-connection-process! (:connection-chan system)
                                     (:command-chan system))
-  
+
   (assoc system
     :server (run-jetty server/handler
                        {:join? false
@@ -40,4 +44,3 @@
     (.stop server))
 
   (dissoc system :server))
-
