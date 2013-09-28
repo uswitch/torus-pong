@@ -1,10 +1,11 @@
 goog.provide('visual.Visualiser');
 
-visual.Visualiser = function(canvasId, gameHeight, paddleHeight, paddleWidth) {
+visual.Visualiser = function(canvasId, gameHeight, gameWidth, paddleHeight, paddleWidth) {
   this.canvas = document.getElementById(canvasId);
   this.ctx = this.canvas.getContext("2d");
 
   this.gameHeight = gameHeight;
+  this.gameWidth = gameWidth;
   this.paddleHeight = paddleHeight;
   this.paddleWidth = paddleWidth;
 };
@@ -14,7 +15,7 @@ visual.Visualiser.prototype.clear = function() {
 };
 
 visual.Visualiser.prototype.drawPlayer = function(position) {
-  this.drawPaddle(this.canvas.width / 2, position);
+  this.drawPaddle(this.gameWidth, position);
 };
 
 visual.Visualiser.prototype.drawLeftOpponent = function(position) {
@@ -22,24 +23,36 @@ visual.Visualiser.prototype.drawLeftOpponent = function(position) {
 };
 
 visual.Visualiser.prototype.drawRightOpponent = function(position) {
-  this.drawPaddle(this.canvas.width - 20, position);
+  this.drawPaddle(this.gameWidth * 2, position);
 };
 
+visual.Visualiser.prototype.scaleX = function(gameX) {
+  return gameX * (this.canvas.width / (this.paddleWidth + (this.gameWidth*2)));
+};
 
+visual.Visualiser.prototype.x = function(gameX) {
+  return this.scaleX(gameX);
+};
 
-visual.Visualiser.prototype.scale = function(gameY) {
+visual.Visualiser.prototype.scaleY = function(gameY) {
   return gameY * (this.canvas.height / this.gameHeight);
 };
 
-
 visual.Visualiser.prototype.y = function(gameY) {
-  return this.canvas.height - this.scale(gameY);
+  return this.canvas.height - this.scaleY(gameY);
 };
 
-visual.Visualiser.prototype.drawPaddle = function(x, position) {
+visual.Visualiser.prototype.drawPaddle = function(gameX, position) {
   this.ctx.fillStyle = "#fff";
-  this.ctx.fillRect(x, this.y(position + this.paddleHeight / 2),
-                10, this.scale(this.paddleHeight));
+
+//  console.log(gameX);
+  console.log(this.x(gameX));
+
+  this.ctx.fillRect(
+    this.x(gameX), 
+    this.y(position + this.paddleHeight / 2),
+    this.scaleX(this.paddleWidth),
+    this.scaleY(this.paddleHeight));
 
 
 };
