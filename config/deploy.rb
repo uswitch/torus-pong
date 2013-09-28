@@ -12,7 +12,7 @@ set :deploy_via, :remote_cache
 set :scm_verbose, true
 set :normalize_asset_timestamps, false
 
-server 'pong.clojurecup.com', :app, :web, :db, :primary => true
+server '146.185.148.131', :app, :web, :db, :primary => true
 
 namespace :deploy do
 
