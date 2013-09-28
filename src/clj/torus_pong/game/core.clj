@@ -60,7 +60,7 @@
 
 (defn abs
   [i]
-  (if (> 0 i) i
+  (if (< 0 i) i
       (- i)))
 
 (defn player-collision?
@@ -84,9 +84,9 @@
 
 (defn wall-collision?
   [ball]
-  (or (>= (+ params/ball-radius (-> ball :p :y))
-          params/game-height)
-      (<= (-> ball :p :y) params/ball-radius)))
+  (or (> (+ params/ball-radius (-> ball :p :y))
+         params/game-height)
+      (< (-> ball :p :y) params/ball-radius)))
 
 (defn wall-collision
   [ball]
@@ -120,12 +120,52 @@
   [game-state]
   (update-in game-state [:fields] (partial mapv advance-field)))
 
+;; Moving balls between fields
+
+(defn outside-left?
+  [ball]
+  (< (-> ball :p :x) 0))
+
+(defn outside-right?
+  [ball]
+  (> (-> ball :p :x) params/game-width))
+
+(defn outside?
+  [ball]
+  (or (outside-left? ball) (outside-right? ball)))
+
+(defn update-ball-field-partition
+  [[left-field field right-field]]
+  (let [safe-balls (remove outside? (:balls field))
+        new-left-balls (filter outside-right? (:balls left-field))
+        new-right-balls (filter outside-left? (:balls right-field))]
+    (assoc field
+      :balls
+      (vec
+       (concat
+        (map (fn [ball] (assoc-in ball [:p :x] (- (-> ball :p :x) params/game-width)))
+             new-left-balls)
+        safe-balls
+        (map (fn [ball] (assoc-in ball [:p :x] (+ (-> ball :p :x) params/game-width)))
+             new-right-balls))))))
+
+(defn update-ball-fields
+  [game-state]
+  (let [fields (:fields game-state)
+        field-partitions (partition
+                          3 1 (concat
+                               [(first fields)] fields [(last fields)]))]
+    (assoc game-state
+      :fields
+      (mapv update-ball-field-partition field-partitions))))
+
 (defn advance
   "Given a game-state and some inputs, advance the game-state one
   tick"
   [game-state commands]
   (let [new-game-state (-> game-state
                            (handle-commands commands)
-                           (advance-fields))]
+                           (advance-fields)
+                           update-ball-fields)]
     (println new-game-state)
     new-game-state))
