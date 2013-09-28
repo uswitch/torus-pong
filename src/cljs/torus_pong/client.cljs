@@ -3,8 +3,8 @@
   (:require [cljs.core.async :refer [alts! >! <! timeout close!]]
             [torus-pong.async.websocket :as websocket]
             [torus-pong.async.utils :refer [event-chan map-chan]]
-            [torus-pong.utils :refer [log]]))
-
+            [torus-pong.utils :refer [log]]
+            [visual.Visualiser]))
 
 ;; commands
 
@@ -24,11 +24,12 @@
 ;; client process
 
 (defn spawn-client-process!
-  [ws-in ws-out command-chan]
+  [ws-in ws-out command-chan vis]
   (go (while true
         (let [[v c] (alts! [ws-out command-chan])]
           (condp = c
-            ws-out       (do (log ["Got message from server" v]))
+            ws-out       (do (log ["Got message from server" v])
+                                 (.update vis "data"))
             command-chan (do (log ["Captured command from user, sending to server" v])
                              (>! ws-in v)))))))
 
@@ -38,5 +39,6 @@
 (defn ^:export run
   []
   (.log js/console "pong!")
-  (let [{:keys [in out]} (websocket/connect! (str "ws://" host))]
-    (spawn-client-process! in out (command-chan))))
+  (let [vis (visual.Visualiser. "canvas")
+        {:keys [in out]} (websocket/connect! (str "ws://" host))]
+    (spawn-client-process! in out (command-chan) vis)))
