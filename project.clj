@@ -23,7 +23,8 @@
   :cljsbuild {:builds
               [{;; :notify-command ["terminal-notifier" "-title" "lein-cljsbuild" "-message"]
                 :source-paths ["src/cljs"]
-                :compiler {:output-to "resources/public/pong.js"
+                :compiler {:libs ["src/js"]
+                           :output-to "resources/public/pong.js"
                            :pretty-print true
                            :optimizations :whitespace}}]}
   :profiles {:dev
