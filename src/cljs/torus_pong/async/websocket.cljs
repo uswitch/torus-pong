@@ -1,4 +1,4 @@
-(ns torus-pong.websocket
+(ns torus-pong.async.websocket
   (:require-macros [cljs.core.async.macros :as m :refer [go]])
   (:require [cljs.core.async :refer [chan timeout put!]]
             [goog.events]
@@ -9,7 +9,7 @@
             [goog.net.WebSocket.EventType :as Events]))
 
 
-(defn websocket-chan
+(defn connect!
   [url]
   (let [ws  (goog.net.WebSocket.)
         in  (chan)
