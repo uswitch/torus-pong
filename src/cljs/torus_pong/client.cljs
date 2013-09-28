@@ -2,11 +2,10 @@
   (:require-macros [cljs.core.async.macros :as m :refer [go]])
   (:require [cljs.core.async :refer [alts! >! <! timeout close!]]
             [cljs.reader :as reader]
+            [torus-pong.utils :refer [log]]
             [torus-pong.async.websocket :as websocket]
             [torus-pong.async.utils :refer [event-chan map-chan]]
-            [torus-pong.utils :refer [log]]
-            [torus-pong.game.params :as game-params]
-            [visual.Visualiser]))
+            [torus-pong.views.main]))
 
 ;; commands
 
@@ -25,18 +24,21 @@
 ;; client process
 
 (defn spawn-client-process!
-  [ws-in ws-out command-chan vis]
+  [ws-in ws-out command-chan main-view]
   (go (while true
         (let [[v c] (alts! [ws-out command-chan])]
           (condp = c
 
             ws-out
-            (let [[type data] v]
-              (case type
-                :message (let [game-state (:fields (reader/read-string data))]
-                           (.update vis (clj->js game-state)))
+            (do
+              (log ["Got message" v])
+              (let [[type data] v]
+                (case type
+                  :message (let [player-game-state (reader/read-string data)]
+                             (log player-game-state)
+                             (>! main-view player-game-state))
 
-                (log ["Silently ignoring"])))
+                  (log ["Silently ignoring"]))))
 
             command-chan
             (>! ws-in v))))))
@@ -47,6 +49,6 @@
 (defn ^:export run
   []
   (.log js/console "pong!")
-  (let [vis (visual.Visualiser. "canvas" game-params/game-height 100)
+  (let [main-view (torus-pong.views.main/create!)
         {:keys [in out]} (websocket/connect! (str "ws://" host))]
-    (spawn-client-process! in out (command-chan) vis)))
+    (spawn-client-process! in out (command-chan) main-view)))
