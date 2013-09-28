@@ -1,6 +1,7 @@
 # torus-pong
 
 A Clojure Cup 2013 contribution by:
+
 - Jon Neale
 - Paul Lam
 - Thomas Kristensen
