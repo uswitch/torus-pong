@@ -13,8 +13,7 @@
             command-chan (do (println "Got command " v)
                              (when v
                                (recur game-state (conj commands v) timer)))
-            timer        (do (println "TIMEOUT!" commands)
-                             (let [updated-game-state (game-core/advance game-state commands)]
+            timer        (do (let [updated-game-state (game-core/advance game-state commands)]
                                (>! game-state-channel updated-game-state)
                                (recur updated-game-state [] (timeout params/tick-ms)))))))
 
