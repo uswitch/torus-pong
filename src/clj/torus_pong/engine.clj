@@ -80,9 +80,9 @@
   (go
    (loop [game-state (<! game-state-channel)]
      (when game-state
-       ;(println game-state)
+       (println @clients-atom)
        (doseq [player-game-state (player-game-states game-state)]
-         (let [player-id   (-> player-game-state :player :id)
+         (let [player-id   (-> player-game-state :player :player :id)
                client-chan (get @clients-atom player-id)]
            (>! client-chan (pr-str player-game-state))))
        (recur (<! game-state-channel))))
