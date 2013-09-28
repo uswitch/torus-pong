@@ -28,7 +28,7 @@
   (go (while true
         (let [[v c] (alts! [ws-out command-chan])]
           (condp = c
-            ws-out       (do (log ["Got message from server" v])
+            ws-out       (do (log ["Got message from server" (pr-str v)])
                                  (.update vis "data"))
             command-chan (do (log ["Captured command from user, sending to server" v])
                              (>! ws-in v)))))))
