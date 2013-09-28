@@ -27,6 +27,7 @@
 (defn spawn-client-process!
   [ws-request ws-in ws-out command-chan id clients]
   (let [in (chan (sliding-buffer 1))]
+    (swap! clients assoc id in)
     (forward! in ws-in)
     (go
      (>! command-chan [:player/join id])
@@ -46,7 +47,6 @@
         (when conn
           (let [id (next-id)]
             (println "Spawning new client process for" (:remote-addr request))
-            (swap! clients assoc id in)
             (println @clients)
             (spawn-client-process! request in out command-chan id clients)
             (recur (<! conn-chan)))))
