@@ -1,6 +1,6 @@
 (ns torus-pong.server
   (:require [com.keminglabs.jetty7-websockets-async.core :as ws]
-            [clojure.core.async :refer [go <! >!]]
+            [clojure.core.async :refer [go <! >! sliding-buffer chan]]
             [compojure.core :refer [routes]]
             [compojure.route :as route]
             [clojure.edn     :as edn])
@@ -17,20 +17,28 @@
   []
   (.incrementAndGet id))
 
+(defn forward!
+  [from to]
+  (go
+   (loop [msg (<! from)]
+     (>! to msg)
+     (recur (<! from)))))
 
 (defn spawn-client-process!
   [ws-request ws-in ws-out command-chan id clients]
-  (go
-   (>! command-chan [:player/join id])
-   (loop [msg (<! ws-out)]
-     (if msg
-       (let [command (edn/read-string msg)]
-         (println "Got message from client: " command)
-         (>! command-chan (conj command id))
-         (recur (<! ws-out)))
-       (do (>! command-chan [:player/leave id])
-           (swap! clients dissoc id))))
-   (println "Client process terminating")))
+  (let [in (chan (sliding-buffer 1))]
+    (forward! in ws-in)
+    (go
+     (>! command-chan [:player/join id])
+     (loop [msg (<! ws-out)]
+       (if msg
+         (let [command (edn/read-string msg)]
+           (println "Got message from client: " command)
+           (>! command-chan (conj command id))
+           (recur (<! ws-out)))
+         (do (>! command-chan [:player/leave id])
+             (swap! clients dissoc id))))
+     (println "Client process terminating"))))
 
 (defn spawn-connection-process!
   [conn-chan command-chan clients]
