@@ -2,6 +2,7 @@
   (:require-macros [cljs.core.async.macros :as m :refer [go]])
   (:require [cljs.core.async :refer [chan sliding-buffer alts! >! <! timeout close!]]
             [torus-pong.utils :refer [log]]
+            [torus-pong.async.utils :refer [event-chan]]
             [torus-pong.game.params :as game-params]
             [visual.Visualiser]))
 
@@ -21,9 +22,9 @@
           (let [{:keys [player left-opponent right-opponent]} player-game-state]
             (doto v
               (.clear)
-              (.drawPlayer (:position player))
-              (.drawLeftOpponent (:position left-opponent))
-              (.drawRightOpponent (:position right-opponent))))
+              (.drawPlayer        (-> player :player :position))
+              (.drawLeftOpponent  (-> left-opponent :player :position))
+              (.drawRightOpponent (-> right-opponent :player :position))))
           (recur (<! c))))
     c))
 

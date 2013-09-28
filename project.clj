@@ -13,7 +13,8 @@
                  [ring/ring-jetty-adapter "1.2.0"]
                  [ring/ring-servlet "1.2.0"]
                  [compojure "1.1.5" :exclusions [ring/ring-core]]
-                 [com.keminglabs/jetty7-websockets-async "0.1.0"]]
+                 [com.keminglabs/jetty7-websockets-async "0.1.0"]
+                 [prismatic/dommy "0.1.1"]]
   :uberjar-name "torus-pong.jar"
   :main torus-pong.main
   :hooks [leiningen.cljsbuild]
