@@ -48,10 +48,9 @@
   (let [fields   (:fields game-state)
         nplayers (count fields)]
     (->> (apply concat (repeat fields))
-         (partition 3 nplayers )
+         (partition 3 1)
          (take nplayers)
-         (map player-game-state)
-         )))
+         (map player-game-state))))
 
 (comment
 
@@ -65,9 +64,15 @@
   (player-game-states  {:fields [{:player {:position 500, :id 1}}
                                  {:player {:position 500, :id 2}}
                                  {:player {:position 500, :id 3}}
-                                 {:player {:position 500, :id 4}}]})
+                                 ;{:player {:position 500, :id 4}}
+                                 ]})
+  
 
+  (player-game-states {:fields [{:player {:position 500, :id 6}, :balls [{:p {:x 866, :y 400}, :v {:x 1, :y 1}}]} {:player {:position 500, :id 8}, :balls [{:p {:x 179, :y 670}, :v {:x 1, :y 1}}]}]})
 
+  
+  (doseq [ps ]
+    (println (-> ps :player :id)))
   )
 
 
@@ -76,10 +81,11 @@
   (go
    (loop [game-state (<! game-state-channel)]
      (when game-state
-       (println game-state)
+       ;(println game-state)
        (doseq [player-game-state (player-game-states game-state)]
          (let [player-id   (-> player-game-state :player :id)
                client-chan (get @clients-atom player-id)]
-           (>! client-chan (pr-str player-game-state))))
+           (>! client-chan (pr-str player-game-state))
+           (println "Emitted state to player" player-id)))
        (recur (<! game-state-channel))))
    (println "Exiting game state emitter loop")))
