@@ -29,6 +29,11 @@
   (fn [game-state command]
     (first command)))
 
+(defmethod handle-command :player/leave
+  [game-state [command id]]
+  (assoc game-state :fields
+         (remove #(= (-> % :player :id) id) (:fields game-state))))
+
 (defmethod handle-command :player/join
   [game-state [command id]]
   (update-in game-state [:fields] conj (initial-field-state id)))
