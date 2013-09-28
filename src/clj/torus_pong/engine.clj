@@ -20,16 +20,67 @@
 
       (println "Exiting engine process")))
 
+;; game-state-emitter
+
+(comment
+  ;; transformation of game-state to player-game-state
+  
+  {:fields [{:player {:position 500, :id 1}}
+            {:player {:position 500, :id 2}}]}
+
+  ;; =>
+  
+  {:player {:position 500, :id 2},
+   :left-opponent {:position 500, :id 1},
+   :right-opponent {:position 500, :id 1}} 
+
+  )
+
+
+(defn player-game-state
+  [[left-field player-field right-field]]
+  {:player (:player player-field)
+   :left-opponent (:player left-field)
+   :right-opponent (:player right-field)})
+
+(defn player-game-states
+  "Given a game-state, return a player game state for each player."
+  [game-state]
+  (let [fields   (:fields game-state)
+        nplayers (count fields)]
+    (->> (apply concat (repeat fields))
+         (partition 3 nplayers )
+         (take nplayers)
+         (map player-game-state)
+         )))
+
+(comment
+
+  (player-game-states {:fields [{:player {:position 500, :id 1}}]})
+
+  (player-game-states {:fields [{:player {:position 500, :id 1}}
+                                {:player {:position 500, :id 2}}]} )
+
+
+
+  (player-game-states  {:fields [{:player {:position 500, :id 1}}
+                                 {:player {:position 500, :id 2}}
+                                 {:player {:position 500, :id 3}}
+                                 {:player {:position 500, :id 4}}]})
+
+
+  )
+
+
 (defn game-state-emitter
   [game-state-channel clients-atom]
   (go
    (loop [game-state (<! game-state-channel)]
-     (println "Reading game state")
      (when game-state
-       (println clients-atom)
-       (doseq [client (vals @clients-atom)]
-         (println "client - " client)
-         (>! client (pr-str game-state))
-         (println "Message sent to client " game-state))
+       (println game-state)
+       (doseq [player-game-state (player-game-states game-state)]
+         (let [player-id   (-> player-game-state :player :id)
+               client-chan (get @clients-atom player-id)]
+           (>! client-chan (pr-str player-game-state))))
        (recur (<! game-state-channel))))
    (println "Exiting game state emitter loop")))
