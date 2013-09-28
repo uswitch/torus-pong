@@ -33,7 +33,7 @@
             ws-out
             (let [[type data] v]
               (case type
-                :message (let [game-state [(reader/read-string data)]]
+                :message (let [game-state (:fields (reader/read-string data))]
                            (.update vis (clj->js game-state)))
 
                 (log ["Silently ignoring"])))

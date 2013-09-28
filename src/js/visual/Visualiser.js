@@ -10,9 +10,9 @@ visual.Visualiser.prototype.update = function(data) {
     var ctx= this.canvas.getContext("2d");
     ctx.clearRect(0,0,this.canvas.width, this.canvas.height);
 
-    this.drawPlayer(ctx, 10, 10);
-    this.drawPlayer(ctx, this.canvas.width - 20, 50);
-    this.drawPlayer(ctx, this.canvas.width/2, data[0].position);
+    this.drawPlayer(ctx, 10, this.y(data[0].player.position));
+    this.drawPlayer(ctx, this.canvas.width/2, this.y(data[1].player.position));
+    this.drawPlayer(ctx, this.canvas.width - 20, this.y(data[2].player.position));
 
     this.drawBall(ctx, 30, 40);
     this.drawBall(ctx, 50, 60);
@@ -21,7 +21,8 @@ visual.Visualiser.prototype.update = function(data) {
 };
 
 visual.Visualiser.prototype.y = function(gameY) {
-    return this.canvas.height - gameY * (this.canvas.height / this.gameHeight);
+    var y = this.canvas.height - gameY * (this.canvas.height / this.gameHeight);
+    return y;
 };
 
 visual.Visualiser.prototype.drawPlayer = function(ctx, x, y) {
