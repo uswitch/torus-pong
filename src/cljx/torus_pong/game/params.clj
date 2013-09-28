@@ -4,6 +4,7 @@
 (def ms-to-move-paddle-from-top-to-bottom 3000)
 
 (def game-height 1000)
+(def game-width  1000)
 
 (def ticks-per-sec 1)
 
