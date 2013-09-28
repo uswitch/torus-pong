@@ -24,3 +24,22 @@ namespace :deploy do
 
   after "deploy:symlink", "deploy:build_uber_jar"
 end
+
+namespace :api do
+  task :install do
+    put File.read(File.join(File.dirname(__FILE__), %w[upstart torus-pong.conf])), '/tmp/torus-pong.conf', :mode => '644'
+    sudo "mv -f /tmp/torus-pong.conf /etc/init/torus-pong.conf"
+  end
+
+  task :start do
+    sudo "start torus-pong"
+  end
+
+  task :stop do
+    sudo "stop torus-pong"
+  end
+
+  task :restart do
+    sudo "restart torus-pong"
+  end
+end
