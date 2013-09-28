@@ -38,7 +38,7 @@
                              (log player-game-state)
                              (>! main-view player-game-state))
 
-                  (log ["Silently ignoring"]))))
+                  (log ["Silently ignoring" v]))))
 
             command-chan
             (>! ws-in v))))))

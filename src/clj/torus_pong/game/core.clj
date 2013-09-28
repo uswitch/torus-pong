@@ -71,11 +71,11 @@
 
 (defn move-balls-in-field
   [field]
-  (update-in field [:balls] (partial map move-ball)))
+  (update-in field [:balls] (partial mapv move-ball)))
 
 (defn move-balls
   [game-state]
-  (update-in game-state [:fields] (partial map move-balls-in-field)))
+  (update-in game-state [:fields] (partial mapv move-balls-in-field)))
 
 (defn advance
   "Given a game-state and some inputs, advance the game-state one
