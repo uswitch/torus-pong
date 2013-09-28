@@ -7,7 +7,7 @@
             :id id}
    :balls [{:p {:x  (int (rand params/game-width))
                 :y  (int (rand params/game-height))}
-            :v  {:x 1 :y 1}}]})
+            :v  {:x 10 :y 10}}]})
 
 (def initial-game-state
   {:fields []})
@@ -58,7 +58,38 @@
             (handle-command current-state command))
           game-state commands))
 
-(defn move-ball
+(defn player-collision?
+  [ball player]
+  (let [x-distance (Math/abs (- (/ params/game-width 2) (-> ball :p :x)))
+        y-distance (Math/abs (- (player :position) (-> ball :p :y)))]
+    (and (< x-distance (+ (/ params/paddle-width 2) params/ball-radius))
+         (< y-distance (+ (/ params/paddle-height 2) params/ball-radius)))))
+
+(defn invert-velocity
+  [ball]
+  (-> ball
+      (update-in [:v :x] -)
+      (update-in [:v :y] -)))
+
+(defn player-collision
+  [ball player]
+  (if (player-collision? ball player)
+    (invert-velocity ball)
+    ball))
+
+(defn wall-collision?
+  [ball]
+  (or (>= (+ params/ball-radius (-> ball :p :y))
+          params/game-height)
+      (<= (-> ball :p :y) params/ball-radius)))
+
+(defn wall-collision
+  [ball]
+  (if (wall-collision? ball)
+    (update-in ball [:v :y] -)
+    ball))
+
+(defn apply-velocity
   [ball]
   (let [current-x-pos (-> ball :p :x)
         current-y-pos (-> ball :p :y)
@@ -69,13 +100,20 @@
      :v {:x current-x-vel
          :y current-y-vel}}))
 
-(defn move-balls-in-field
-  [field]
-  (update-in field [:balls] (partial mapv move-ball)))
+(defn advance-ball
+  [player ball]
+  (-> ball
+      (player-collision player)
+      wall-collision
+      apply-velocity))
 
-(defn move-balls
+(defn advance-field
+  [field]
+  (update-in field [:balls] (partial mapv (partial advance-ball (:player field)))))
+
+(defn advance-fields
   [game-state]
-  (update-in game-state [:fields] (partial mapv move-balls-in-field)))
+  (update-in game-state [:fields] (partial mapv advance-field)))
 
 (defn advance
   "Given a game-state and some inputs, advance the game-state one
@@ -83,6 +121,6 @@
   [game-state commands]
   (let [new-game-state (-> game-state
                            (handle-commands commands)
-                           (move-balls))]
+                           (advance-fields))]
     (println new-game-state)
     new-game-state))
