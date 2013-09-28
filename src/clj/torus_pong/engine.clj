@@ -37,9 +37,9 @@
 
 (defn player-game-state
   [[left-field player-field right-field]]
-  {:player (:player player-field)
-   :left-opponent (:player left-field)
-   :right-opponent (:player right-field)})
+  {:player         player-field
+   :left-opponent  left-field
+   :right-opponent right-field})
 
 (defn player-game-states
   "Given a game-state, return a player game state for each player."

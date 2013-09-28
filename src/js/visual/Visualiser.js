@@ -45,16 +45,11 @@ visual.Visualiser.prototype.y = function(gameY) {
 visual.Visualiser.prototype.drawPaddle = function(gameX, position) {
   this.ctx.fillStyle = "#fff";
 
-//  console.log(gameX);
-  console.log(this.x(gameX));
-
   this.ctx.fillRect(
     this.x(gameX), 
     this.y(position + this.paddleHeight / 2),
     this.scaleX(this.paddleWidth),
     this.scaleY(this.paddleHeight));
-
-
 };
 
 visual.Visualiser.prototype.drawBall = function(ctx, x, y) {
