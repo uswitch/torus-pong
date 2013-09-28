@@ -34,7 +34,6 @@
      (loop [msg (<! ws-out)]
        (if msg
          (let [command (edn/read-string msg)]
-           (println "Got message from client: " command)
            (>! command-chan (conj command id))
            (recur (<! ws-out)))
          (do (>! command-chan [:player/leave id])

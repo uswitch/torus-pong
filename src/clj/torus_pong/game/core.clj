@@ -167,5 +167,4 @@
                            (handle-commands commands)
                            (advance-fields)
                            update-ball-fields)]
-    (println new-game-state)
     new-game-state))

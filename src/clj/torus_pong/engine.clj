@@ -10,9 +10,8 @@
              timer      (timeout (long params/tick-ms))]
         (let [[v c] (alts! [timer command-chan] :priority true)]
           (condp = c
-            command-chan (do (println "Got command " v)
-                             (when v
-                               (recur game-state (conj commands v) timer)))
+            command-chan (when v
+                           (recur game-state (conj commands v) timer))
             timer        (do (let [updated-game-state (game-core/advance game-state commands)]
                                (>! game-state-channel updated-game-state)
                                (recur updated-game-state [] (timeout (long params/tick-ms))))))))
@@ -85,7 +84,6 @@
        (doseq [player-game-state (player-game-states game-state)]
          (let [player-id   (-> player-game-state :player :id)
                client-chan (get @clients-atom player-id)]
-           (>! client-chan (pr-str player-game-state))
-           (println "Emitted state to player" player-id)))
+           (>! client-chan (pr-str player-game-state))))
        (recur (<! game-state-channel))))
    (println "Exiting game state emitter loop")))
