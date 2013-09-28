@@ -16,13 +16,13 @@
 (defn move-up
   [position]
   (if (< (+ position (/ params/paddle-height 2)) params/game-height)
-    (reduce min [(+ position params/distance-paddle-moves-per-tick) params/game-height])
+    (reduce min [(+ position (long params/distance-paddle-moves-per-tick)) params/game-height])
     position))
 
 (defn move-down
   [position]
   (if (> (- position (/ params/paddle-height 2)) 0)
-    (reduce max [(- position params/distance-paddle-moves-per-tick) 0])
+    (reduce max [(- position (long params/distance-paddle-moves-per-tick)) 0])
     position))
 
 (defmulti handle-command
@@ -32,7 +32,7 @@
 (defmethod handle-command :player/leave
   [game-state [command id]]
   (assoc game-state :fields
-         (remove #(= (-> % :player :id) id) (:fields game-state))))
+         (vec (remove #(= (-> % :player :id) id) (:fields game-state)))))
 
 (defmethod handle-command :player/join
   [game-state [command id]]
