@@ -32,7 +32,7 @@ visual.Visualiser.prototype.y = function(gameY) {
 visual.Visualiser.prototype.drawPlayer = function(ctx, x, y) {
 
     ctx.fillStyle="#fff";
-    ctx.fillRect(x, this.y(y - this.playerHeight / 2),
+    ctx.fillRect(x, this.y(y + this.playerHeight / 2),
                  10, this.scale(this.playerHeight));
 
 };
