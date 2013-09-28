@@ -15,6 +15,8 @@
                  [compojure "1.1.5" :exclusions [ring/ring-core]]
                  [com.keminglabs/jetty7-websockets-async "0.1.0"]]
   :uberjar-name "torus-pong.jar"
+  :main torus-pong.main
+  :hooks [leiningen.cljsbuild]
   :source-paths ["src/clj"
                  "src/cljs"]
   :plugins [[lein-cljsbuild "0.3.3"]]
