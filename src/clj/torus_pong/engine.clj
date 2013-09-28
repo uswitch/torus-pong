@@ -18,10 +18,7 @@
                                (>! game-state-channel updated-game-state)
                                (recur updated-game-state [] (timeout params/tick-ms)))))))
 
-      (println "Exiting engine process")
-
-
-      ))
+      (println "Exiting engine process")))
 
 (defn game-state-emitter
   [game-state-channel]
