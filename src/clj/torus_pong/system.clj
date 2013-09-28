@@ -15,7 +15,9 @@
    :command-chan    (chan)
 
       ;; channel for communicating the game state
-   :game-state-chan    (chan)})
+   :game-state-chan (chan)
+
+   :clients         (atom {})})
 
 (defn jetty-configurator
   [system]
@@ -26,9 +28,10 @@
   (println "Starting system")
 
   (engine/spawn-engine-process! (:command-chan system) (:game-state-chan system))
-  (engine/game-state-emitter    (:game-state-chan system))
+  (engine/game-state-emitter    (:game-state-chan system) (:clients system))
   (server/spawn-connection-process! (:connection-chan system)
-                                    (:command-chan system))
+                                    (:command-chan    system)
+                                    (:clients         system))
 
   (assoc system
     :server (run-jetty server/handler

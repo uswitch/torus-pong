@@ -21,10 +21,15 @@
       (println "Exiting engine process")))
 
 (defn game-state-emitter
-  [game-state-channel]
+  [game-state-channel clients-atom]
   (go
    (loop [game-state (<! game-state-channel)]
      (println "Reading game state")
      (when game-state
+       (println clients-atom)
+       (doseq [client (vals @clients-atom)]
+         (println "client - " client)
+         (>! client (pr-str game-state))
+         (println "Message sent to client " game-state))
        (recur (<! game-state-channel))))
    (println "Exiting game state emitter loop")))
