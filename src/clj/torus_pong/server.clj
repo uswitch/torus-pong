@@ -5,7 +5,7 @@
             [compojure.route :as route]))
 
 (def handler
-  (routes (route/files "/")))
+  (routes (route/files "/" {:root "resources/public"})))
 
 (defn spawn-client-process!
   [request in out]
