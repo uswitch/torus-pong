@@ -7,7 +7,7 @@
   [command-chan game-state-channel]
   (go (loop [game-state game-core/initial-game-state
              commands   []
-             timer      (timeout params/tick-ms)]
+             timer      (timeout (long params/tick-ms))]
         (let [[v c] (alts! [timer command-chan] :priority true)]
           (condp = c
             command-chan (do (println "Got command " v)
@@ -15,7 +15,7 @@
                                (recur game-state (conj commands v) timer)))
             timer        (do (let [updated-game-state (game-core/advance game-state commands)]
                                (>! game-state-channel updated-game-state)
-                               (recur updated-game-state [] (timeout params/tick-ms)))))))
+                               (recur updated-game-state [] (timeout (long params/tick-ms))))))))
 
       (println "Exiting engine process")))
 
@@ -23,15 +23,15 @@
 
 (comment
   ;; transformation of game-state to player-game-state
-  
+
   {:fields [{:player {:position 500, :id 1}}
             {:player {:position 500, :id 2}}]}
 
   ;; =>
-  
+
   {:player {:position 500, :id 2},
    :left-opponent {:position 500, :id 1},
-   :right-opponent {:position 500, :id 1}} 
+   :right-opponent {:position 500, :id 1}}
 
   )
 
@@ -66,11 +66,11 @@
                                  {:player {:position 500, :id 3}}
                                  ;{:player {:position 500, :id 4}}
                                  ]})
-  
+
 
   (player-game-states {:fields [{:player {:position 500, :id 6}, :balls [{:p {:x 866, :y 400}, :v {:x 1, :y 1}}]} {:player {:position 500, :id 8}, :balls [{:p {:x 179, :y 670}, :v {:x 1, :y 1}}]}]})
 
-  
+
   (doseq [ps ]
     (println (-> ps :player :id)))
   )
