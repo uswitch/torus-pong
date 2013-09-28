@@ -32,8 +32,11 @@
             command-chan (do (log ["Captured command from user, sending to server" v])
                              (>! ws-in v)))))))
 
+(def host
+  (aget js/window "location" "host"))
+
 (defn ^:export run
   []
   (.log js/console "pong!")
-  (let [{:keys [in out]} (websocket/connect! "ws://localhost:8080")]
+  (let [{:keys [in out]} (websocket/connect! (str "ws://" host))]
     (spawn-client-process! in out (command-chan))))
