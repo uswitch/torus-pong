@@ -7,10 +7,21 @@
       body {
         background-color: #000;
       }
+
+      #container {
+        width: 100%;
+        text-align:center;
+      }
+
+      canvas {
+        display: inline;
+      }
     </style>
   </head>
   <body>
-    <canvas id="canvas" width="600" height="300"></canvas>
+    <div id="container">
+      <canvas id="canvas" width="600" height="300"></canvas>
+    </div>
     <script>torus_pong.client.run()</script>
   </body>
 </html>
