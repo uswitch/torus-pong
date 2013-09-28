@@ -1,6 +1,7 @@
 (ns torus-pong.client
   (:require-macros [cljs.core.async.macros :as m :refer [go]])
   (:require [cljs.core.async :refer [alts! >! <! timeout close!]]
+            [cljs.reader :as reader]
             [torus-pong.async.websocket :as websocket]
             [torus-pong.async.utils :refer [event-chan map-chan]]
             [torus-pong.utils :refer [log]]
@@ -20,7 +21,6 @@
   []
   (event-chan "keydown" key-event->command))
 
-
 ;; client process
 
 (defn spawn-client-process!
@@ -28,10 +28,17 @@
   (go (while true
         (let [[v c] (alts! [ws-out command-chan])]
           (condp = c
-            ws-out       (do (log ["Got message from server" (pr-str v)])
-                                 (.update vis "data"))
-            command-chan (do (log ["Captured command from user, sending to server" v])
-                             (>! ws-in v)))))))
+
+            ws-out
+            (let [[type data] v]
+              (case type
+                :message (let [game-state [(reader/read-string data)]]
+                           (.update vis (clj->js game-state)))
+
+                (log ["Silently ignoring"])))
+
+            command-chan
+            (>! ws-in v))))))
 
 (def host
   (aget js/window "location" "host"))

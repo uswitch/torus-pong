@@ -7,11 +7,11 @@ visual.Visualiser = function(canvasId) {
 visual.Visualiser.prototype.update = function(data) {
 
     var ctx= this.canvas.getContext("2d");
-    ctx.clearRect(0,0,this.width,this.height);
+    ctx.clearRect(0,0,this.canvas.width, this.canvas.height);
 
     this.drawPlayer(ctx, 10, 10);
     this.drawPlayer(ctx, this.canvas.width - 20, 50);
-    this.drawPlayer(ctx, this.canvas.width/2, 25);
+    this.drawPlayer(ctx, this.canvas.width/2, data[0].position);
 
     this.drawBall(ctx, 30, 40);
     this.drawBall(ctx, 50, 60);

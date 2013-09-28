@@ -18,11 +18,11 @@
   :main torus-pong.main
   :hooks [leiningen.cljsbuild]
   :source-paths ["src/clj"
-                 "src/cljs"]
+                 "src/cljx"]
   :plugins [[lein-cljsbuild "0.3.3"]]
   :cljsbuild {:builds
               [{;; :notify-command ["terminal-notifier" "-title" "lein-cljsbuild" "-message"]
-                :source-paths ["src/cljs"]
+                :source-paths ["src/cljs" "src/cljx"]
                 :compiler {:libs ["src/js"]
                            :output-to "resources/public/pong.js"
                            :pretty-print true
