@@ -1,6 +1,6 @@
 (ns torus-pong.client
   (:require-macros [cljs.core.async.macros :as m :refer [go]])
-  (:require [cljs.core.async :refer [alts! >! <! timeout close!]]
+  (:require [cljs.core.async :refer [alts! >! <! timeout close! chan]]
             [cljs.reader :as reader]
             [torus-pong.utils :refer [log host]]
             [torus-pong.async.websocket :as websocket]
@@ -9,21 +9,35 @@
             [goog.events]
             [goog.dom]))
 
-;; commands
+;; keys
+
+(def key-down (atom nil))
 
 (defn key-event->command
   [e]
   (let [code (.-keyCode e)]
     (case code
-      38 [:player/up]
-      40 [:player/down]
-      87 [:player/up]
-      83 [:player/down]
+      38 :up
+      40 :down
+      87 :up
+      83 :down
       nil)))
 
-(defn command-chan
-  []
-  (event-chan "keydown" key-event->command))
+(defn bind-key-observer
+  [command-chan]
+  (go (while true
+        (<! (timeout 50))
+        (case @key-down
+          :up   (>! command-chan [:player/up])
+          :down (>! command-chan [:player/down])
+          :not-matched)))
+  (.addEventListener js/window "keydown"
+                     (fn [e]
+                       (.log js/console e)
+                       (reset! key-down (key-event->command e))))
+  (.addEventListener js/window "keyup"
+                     (fn [e]
+                       (reset! key-down nil))))
 
 ;; client process
 
@@ -46,11 +60,6 @@
             (>! ws-in v))))))
 
 (def clicked (atom nil))
-
-(defn button-click
-  [command-chan command]
-  (fn [e]
-    (go (>! command-chan command))))
 
 (defn bind-arrow-click
   [command-chan]
@@ -83,6 +92,7 @@
   (.log js/console "pong!")
   (let [torus-view (torus-pong.views.torus/create!)
         {:keys [in out]} (websocket/connect! (str "ws://" host))
-        command-channel (command-chan)]
+        command-channel (chan)]
     (spawn-client-process! in out command-channel torus-view)
+    (bind-key-observer command-channel)
     (bind-arrow-click command-channel)))
