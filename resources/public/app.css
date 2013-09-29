@@ -1,0 +1,25 @@
+body {
+    background-color: #000;
+}
+
+#how-to-play {
+    font-family: 'Press Start 2P', ‘Times New Roman’, serif;
+    font-size: 0.5em;
+    background-color: black;
+    color: white;
+    padding: 10px;
+}
+
+
+
+#container {
+    width: 100%;
+    text-align:center;
+}
+#canvas {
+    display: inline;
+}
+
+h1, a { font-family: 'Press Start 2P', ‘Times New Roman’, serif;
+        color: yellow;
+        text-shadow: 2px 2px 0 #AAA;}
