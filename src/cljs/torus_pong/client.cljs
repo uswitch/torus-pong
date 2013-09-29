@@ -62,11 +62,20 @@
           :not-matched)))
   (goog.events/listen (goog.dom/getElement "up-arrow") "mouseover"
                       #(reset! clicked :up))
-  (goog.events/listen (goog.dom/getElement "down-arrow") "mouseover"
-                      #(reset! clicked :down))
   (goog.events/listen (goog.dom/getElement "up-arrow") "mouseout"
                       #(reset! clicked nil))
+  (goog.events/listen (goog.dom/getElement "up-arrow") "touchstart"
+                      #(reset! clicked :up))
+  (goog.events/listen (goog.dom/getElement "up-arrow") "touchend"
+                      #(reset! clicked nil))
+
+  (goog.events/listen (goog.dom/getElement "down-arrow") "mouseover"
+                      #(reset! clicked :down))
   (goog.events/listen (goog.dom/getElement "down-arrow") "mouseout"
+                      #(reset! clicked nil))
+  (goog.events/listen (goog.dom/getElement "down-arrow") "touchstart"
+                      #(reset! clicked :down))
+  (goog.events/listen (goog.dom/getElement "down-arrow") "touchend"
                       #(reset! clicked nil)))
 
 (defn ^:export run
