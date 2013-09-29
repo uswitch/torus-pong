@@ -1,3 +1,5 @@
+require 'capistrano/deploy/tagger'
+
 set :application, "torus-pong"
 set :user, "deploy"
 set :keep_releases, 3
