@@ -1,7 +1,9 @@
 (ns torus-pong.system
   (:require [clojure.core.async :refer [chan close!]]
+            [clojure.core.async.lab :refer [broadcast]]
             [com.keminglabs.jetty7-websockets-async.core :as ws]
             [ring.adapter.jetty :refer [run-jetty]]
+            [torus-pong.async :refer [forward!]]
             [torus-pong.server :as server]
             [torus-pong.engine :as engine]))
 
@@ -17,7 +19,8 @@
       ;; channel for communicating the game state
    :game-state-chan (chan)
 
-   :clients         (atom {})})
+   :clients         (atom {})
+   :listen-clients  (atom {})})
 
 (defn jetty-configurator
   [system]
@@ -27,11 +30,18 @@
   [system]
   (println "Starting system")
 
-  (engine/spawn-engine-process! (:command-chan system) (:game-state-chan system))
-  (engine/game-state-emitter    (:game-state-chan system) (:clients system))
+  (let [individual-game-state-chan (chan)
+        full-game-state-chan (chan)
+        game-state-chan (broadcast individual-game-state-chan
+                                   full-game-state-chan)]
+    (forward! (:game-state-chan system) game-state-chan)
+    (engine/spawn-engine-process! (:command-chan system) (:game-state-chan system))
+    (engine/game-state-emitter      individual-game-state-chan (:clients system))
+    (engine/full-game-state-emitter full-game-state-chan (:listen-clients system)))
   (server/spawn-connection-process! (:connection-chan system)
                                     (:command-chan    system)
-                                    (:clients         system))
+                                    (:clients         system)
+                                    (:listen-clients  system))
 
   (assoc system
     :server (run-jetty server/handler

@@ -80,10 +80,19 @@
   (go
    (loop [game-state (<! game-state-channel)]
      (when game-state
-       (println @clients-atom)
        (doseq [player-game-state (player-game-states game-state)]
          (let [player-id   (-> player-game-state :player :player :id)
                client-chan (get @clients-atom player-id)]
            (>! client-chan (pr-str player-game-state))))
        (recur (<! game-state-channel))))
    (println "Exiting game state emitter loop")))
+
+(defn full-game-state-emitter
+  [game-state-channel listen-clients-atom]
+  (go
+   (loop [game-state (<! game-state-channel)]
+     (when game-state
+       (doseq [client-chan (vals @listen-clients-atom)]
+         (>! client-chan (pr-str game-state)))
+       (recur (<! game-state-channel))))
+   (println "Exiting full game state emitter loop")))

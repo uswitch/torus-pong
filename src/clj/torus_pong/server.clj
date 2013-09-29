@@ -1,5 +1,6 @@
 (ns torus-pong.server
-  (:require [com.keminglabs.jetty7-websockets-async.core :as ws]
+  (:require [torus-pong.async :refer [forward!]]
+            [com.keminglabs.jetty7-websockets-async.core :as ws]
             [clojure.core.async :refer [go <! >! sliding-buffer chan]]
             [compojure.core :refer [routes]]
             [compojure.route :as route]
@@ -17,14 +18,6 @@
   []
   (.incrementAndGet id))
 
-(defn forward!
-  [from to]
-  (go
-   (loop [msg (<! from)]
-     (>! to msg)
-     (when msg
-       (recur (<! from))))))
-
 (defn spawn-client-process!
   [ws-request ws-in ws-out command-chan id clients]
   (let [in (chan (sliding-buffer 1))]
@@ -41,13 +34,31 @@
              (swap! clients dissoc id))))
      (println "Client process terminating"))))
 
+(defn spawn-just-listen-process!
+  [ws-in ws-out listen-clients]
+  (let [in (chan (sliding-buffer 1))]
+    (swap! listen-clients assoc ws-out in)
+    (forward! in ws-in)
+    (go
+     (<! ws-out)
+     (swap! listen-clients dissoc ws-out)
+     (println "Just listen process terminating"))))
+
 (defn spawn-connection-process!
-  [conn-chan command-chan clients]
+  [conn-chan command-chan clients listen-clients]
   (go (loop [{:keys [request in out] :as conn} (<! conn-chan)]
         (when conn
-          (let [id (next-id)]
-            (println "Spawning new client process for" (:remote-addr request))
-            (println @clients)
-            (spawn-client-process! request in out command-chan id clients)
+          (condp = (:uri request)
+            "/" (let [id (next-id)]
+                  (println "Spawning new client process for"
+                           (:remote-addr request))
+                  (spawn-client-process!
+                   request in out command-chan id clients)
+                  (recur (<! conn-chan)))
+            "/just-listen" (do
+                             (println "Spawning just listen process")
+                             (spawn-just-listen-process!
+                              in out listen-clients)
+                             (recur (<! conn-chan)))
             (recur (<! conn-chan)))))
       (println "Connection process terminating")))
