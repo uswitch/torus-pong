@@ -5,7 +5,9 @@
             [torus-pong.utils :refer [log host]]
             [torus-pong.async.websocket :as websocket]
             [torus-pong.async.utils :refer [event-chan map-chan]]
-            [torus-pong.views.torus]))
+            [torus-pong.views.torus]
+            [goog.events]
+            [goog.dom]))
 
 ;; commands
 
@@ -43,9 +45,38 @@
             command-chan
             (>! ws-in v))))))
 
+(def clicked (atom nil))
+
+(defn button-click
+  [command-chan command]
+  (fn [e]
+    (go (>! command-chan command))))
+
+(defn bind-arrow-click
+  [command-chan]
+  (.log js/console "Starting loop")
+  (go (while true
+        (<! (timeout 50))
+        (.log js/console @clicked)
+        (case @clicked
+          :up   (>! command-chan [:player/up])
+          :down (>! command-chan [:player/down])
+          :not-matched)))
+  (.log js/console "Loop is going")
+  (goog.events/listen (goog.dom/getElement "up-arrow") "mouseover"
+                      #(reset! clicked :up))
+  (goog.events/listen (goog.dom/getElement "down-arrow") "mouseover"
+                      #(reset! clicked :down))
+  (goog.events/listen (goog.dom/getElement "up-arrow") "mouseout"
+                      #(reset! clicked nil))
+  (goog.events/listen (goog.dom/getElement "down-arrow") "mouseout"
+                      #(reset! clicked nil)))
+
 (defn ^:export run
   []
   (.log js/console "pong!")
   (let [torus-view (torus-pong.views.torus/create!)
-        {:keys [in out]} (websocket/connect! (str "ws://" host))]
-    (spawn-client-process! in out (command-chan) torus-view)))
+        {:keys [in out]} (websocket/connect! (str "ws://" host))
+        command-channel (command-chan)]
+    (spawn-client-process! in out command-channel torus-view)
+    (bind-arrow-click command-channel)))

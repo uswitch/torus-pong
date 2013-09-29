@@ -10,9 +10,19 @@ body {
     padding: 10px;
 }
 
-#description {
+#sidebar {
     width: 25%;
     float: left;
+
+}
+
+#description {
+    margin-bottom: 20px;
+}
+
+#controls img {
+    margin-bottom: 10px;
+
 }
 
 #container {
