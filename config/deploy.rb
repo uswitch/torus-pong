@@ -12,6 +12,9 @@ set :deploy_via, :remote_cache
 set :scm_verbose, true
 set :normalize_asset_timestamps, false
 
+set :latest_deploy_tag, "clojurecup13"
+set :update_deploy_timestamp_tags, false
+
 server '146.185.148.131', :app, :web, :db, :primary => true
 
 namespace :deploy do
