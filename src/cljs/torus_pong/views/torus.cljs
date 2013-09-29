@@ -58,7 +58,7 @@
 
 (defn draw-score
   [context offset s theta score]
-  (let [[x y] (circle-pos offset s theta -300)]
+  (let [[x y] (circle-pos offset s theta (/ (- s) 2))]
     (.fillText context score x y)))
 
 (defn draw-players
