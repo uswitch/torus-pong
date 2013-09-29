@@ -1,5 +1,3 @@
--webkit-user-select: none;
-
 body {
     background-color: #000;
 }
@@ -24,7 +22,7 @@ body {
 
 #controls img {
     margin-bottom: 10px;
-
+    -webkit-user-select: none;
 }
 
 #container {

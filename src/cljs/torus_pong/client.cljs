@@ -54,15 +54,12 @@
 
 (defn bind-arrow-click
   [command-chan]
-  (.log js/console "Starting loop")
   (go (while true
-        (<! (timeout 50))
-        (.log js/console @clicked)
+        (<! (timeout 25))
         (case @clicked
           :up   (>! command-chan [:player/up])
           :down (>! command-chan [:player/down])
           :not-matched)))
-  (.log js/console "Loop is going")
   (goog.events/listen (goog.dom/getElement "up-arrow") "mouseover"
                       #(reset! clicked :up))
   (goog.events/listen (goog.dom/getElement "down-arrow") "mouseover"
