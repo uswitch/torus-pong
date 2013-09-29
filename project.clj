@@ -1,15 +1,15 @@
 (defproject torus-pong "0.1.0-SNAPSHOT"
   :description "A multiplayer take on the classic Game of Pong. Entry for Clojure Cup 2013."
-  :url "http://example.com/FIXME"
+  :url "http://pong.clojurecup.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :repositories {"sonatype-staging"
-                 "https://oss.sonatype.org/content/groups/staging/"
-                 "sonatype-oss-public"
-                 "https://oss.sonatype.org/content/groups/public/"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-1909"]
-                 [core.async "0.1.0-SNAPSHOT"]
+
+                 ;; because we needed to be on the bleeding edge and
+                 ;; latest snapshot was nowhere to be found
+                 [ragge/core.async "0.1.0-SNAPSHOT"]
+
                  [ring/ring-jetty-adapter "1.2.0"]
                  [ring/ring-servlet "1.2.0"]
                  [compojure "1.1.5" :exclusions [ring/ring-core]]
