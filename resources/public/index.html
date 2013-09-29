@@ -1,7 +1,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Press+Start+2P'>
+    <link rel='stylesheet' type='text/css' href='/font.css'>
     <link rel='stylesheet' type='text/css' href='/app.css'>
     <link rel="stylesheet" href="/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
     <script type="text/javascript" src="/jquery-1.10.2.min.js"></script>
@@ -20,8 +20,10 @@
 
   </head>
   <body>
+    <div id="description">
     <h1>Welcome to Torus Pong</h1>
-    <a href="#how-to-play" id="instructions">How to play</a>
+    <a href="#how-to-play" id="instructions">How to play</a><br/><br/>
+    <a href="http://clojurecup.com/app.html?app=pong">Vote for us!</a>
     <div id="how-to-play" style="display:none;width:500px;">
       <a href="javascript:$.fancybox.close();">Close</a>
       <h2>Torus Pong: Massively Multiplayer Online Pong!</<h2>
@@ -35,7 +37,7 @@
       <p>Use the up and down arrows on your keyboard to move your paddle</p>
 
       <p>Built as part of the <a href="http://clojurecup.com/">Clojure Cup</a> Vote for our app <a href="http://clojurecup.com/app.html?app=pong">here</a></p>
-
+    </div>
     </div>
     <div id="container">
       <canvas id="canvas" width="600" height="600"></canvas>
