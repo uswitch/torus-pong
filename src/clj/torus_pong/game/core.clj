@@ -5,10 +5,9 @@
   [id]
   {:player {:position (/ params/game-height 2)
             :id id}
-   :balls [{:id (str (java.util.UUID/randomUUID))
-            :p {:x  (int (rand params/game-width))
+   :balls [{:p {:x  (int (rand params/game-width))
                 :y  (int (rand params/game-height))}
-            :v  {:x 25 :y 25}}]})
+            :v  {:x 1 :y 1}}]})
 
 (def initial-game-state
   {:fields []})
@@ -100,42 +99,21 @@
         current-y-pos (-> ball :p :y)
         current-x-vel (-> ball :v :x)
         current-y-vel (-> ball :v :y)]
-    {:id (:id ball)
-     :p {:x (+ current-x-pos (* params/ball-speed current-x-vel))
+    {:p {:x (+ current-x-pos (* params/ball-speed current-x-vel))
          :y (+ current-y-pos (* params/ball-speed current-y-vel))}
      :v {:x current-x-vel
          :y current-y-vel}}))
 
-(defn ball-collision?
-  [first-ball second-ball]
-  ;;check to make sure they are not the same ball
-  (and (not= first-ball second-ball)
-       (< (abs (- (-> first-ball :p :x) (-> second-ball :p :x)))
-          (* 2 params/ball-radius))
-       (< (abs (- (-> first-ball :p :y) (-> second-ball :p :y)))
-          (* 2 params/ball-radius))))
-
-(defn ball-collision
-  [ball balls]
-  (if (some #(ball-collision? ball %) balls)
-    (-> ball
-        (update-in [:v :y] -)
-        (update-in [:v :x] -))
-    ball))
-
 (defn advance-ball
-  [field ball]
-  (let [player (:player field)
-        balls  (:ball field)]
-    (-> ball
-        (player-collision player)
-        wall-collision
-        (ball-collision balls)
-        apply-velocity)))
+  [player ball]
+  (-> ball
+      (player-collision player)
+      wall-collision
+      apply-velocity))
 
 (defn advance-field
   [field]
-  (update-in field [:balls] (partial mapv (partial advance-ball field))))
+  (update-in field [:balls] (partial mapv (partial advance-ball (:player field)))))
 
 (defn advance-fields
   [game-state]
