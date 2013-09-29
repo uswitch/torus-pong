@@ -24,20 +24,20 @@
      (/ s 4)))
 
 (defn circle-pos
-  [s theta y]
-  [(+ (/ s 2) (* (canvas-y s y)
-                 (Math/cos (- theta half-pi))))
-   (+ (/ s 2) (* (canvas-y s y)
-                 (Math/sin (- theta half-pi))))])
+  [offset s theta y]
+  [(+ offset (* (canvas-y s y)
+                (Math/cos (- theta half-pi))))
+   (+ offset (* (canvas-y s y)
+                (Math/sin (- theta half-pi))))])
 
 (defn moveTo-on-circle
-  [context s theta y]
-  (let [[circle-x circle-y] (circle-pos s theta y)]
+  [context offset s theta y]
+  (let [[circle-x circle-y] (circle-pos offset s theta y)]
     (.moveTo context circle-x circle-y)))
 
 (defn lineTo-on-circle
-  [context s theta y]
-  (let [[circle-x circle-y] (circle-pos s theta y)]
+  [context offset s theta y]
+  (let [[circle-x circle-y] (circle-pos offset s theta y)]
     (.lineTo context circle-x circle-y)))
 
 ;; drawing
@@ -57,7 +57,7 @@
       (.stroke))))
 
 (defn draw-players
-  [context s players]
+  [context offset s players]
   (let [n (count players)]
     (when (> n 0)
       (set! (.-strokeStyle context) "#fff")
@@ -67,27 +67,27 @@
           (doto context
             (.beginPath)
             (moveTo-on-circle
-             s theta (- (:position player) game-params/paddle-height))
+             offset s theta (- (:position player) (/ game-params/paddle-height 2)))
             (lineTo-on-circle
-             s theta (+ (:position player) game-params/paddle-height))
+             offset s theta (+ (:position player) (/ game-params/paddle-height 2)))
             (.stroke)))))))
 
 (defn draw-balls-in-field
-  [context s n index field]
+  [context offset s n index field]
   (doseq [ball (:balls field)]
     (let [theta (+ (* index (/ (* 2 Math/PI) n))
                    (* (- (/ (-> ball :p :x) game-params/game-width) 0.5)
                       (/ (* 2 Math/PI) n)))
-          [x y] (circle-pos s theta (-> ball :p :y))]
+          [x y] (circle-pos offset s theta (-> ball :p :y))]
       (doto context
         (.fillRect (- x 5) (- y 5) 10 10)))))
 
 (defn draw-balls
-  [context s fields]
+  [context offset s fields]
   (let [n (count fields)]
     (when (> n 0)
       (set! (.-fillStyle context) "#fff")
-      (doall (map-indexed (partial draw-balls-in-field context s n) fields)))))
+      (doall (map-indexed (partial draw-balls-in-field context offset s n) fields)))))
 
 (defn update-view
   [canvas game-state]
@@ -101,8 +101,8 @@
     (doto context
       (.clearRect 0 0 w h)
       (draw-arena offset s)
-      (draw-players s players)
-      (draw-balls s fields))))
+      (draw-players offset s players)
+      (draw-balls offset s fields))))
 
 (defn create!
   []
