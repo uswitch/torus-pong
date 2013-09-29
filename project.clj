@@ -1,6 +1,6 @@
 (defproject torus-pong "0.1.0-SNAPSHOT"
   :description "A multiplayer take on the classic Game of Pong. Entry for Clojure Cup 2013."
-  :url "http://example.com/FIXME"
+  :url "http://pong.clojurecup.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
