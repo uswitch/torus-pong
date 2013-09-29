@@ -58,9 +58,20 @@
 
 (defn draw-score
   [context offset s theta score name]
-  (let [[x y] (circle-pos offset s theta (/ (- s) 2))]
-    (.fillText context name x (- y 10))
-    (.fillText context score x (+ y 10))))
+  (let [[x y] (circle-pos offset s theta (* 1.15 game-params/game-height))]
+    (.save context)
+    (.translate context x y)
+    (.rotate context theta)
+    (set! (.-font context) "16px Arial")
+    (.fillText context name 0 0)
+    (.restore context))
+  (let [[x y] (circle-pos offset s theta (* -0.1 game-params/game-height))]
+    (.save context)
+    (.translate context x y)
+    (.rotate context theta)
+    (set! (.-font context) "bold 16px Arial")
+    (.fillText context score 0 10)
+    (.restore context)))
 
 (defn draw-players
   [context offset s players]
@@ -122,7 +133,7 @@
         w (.-width canvas)
         h (.-height canvas)
         offset (/ w 2)
-        s (- w 20)
+        s (- w 60)
         fields (:fields game-state)
         players (map :player fields)]
     (doto context
