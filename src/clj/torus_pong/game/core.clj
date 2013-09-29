@@ -104,16 +104,37 @@
      :v {:x current-x-vel
          :y current-y-vel}}))
 
+
+(defn ball-collision?
+  [first-ball second-ball]
+  ;;check to make sure they are not the same ball
+  (and (not= first-ball second-ball)
+       (< (abs (- (-> first-ball :p :x) (-> second-ball :p :x)))
+          (* 2 params/ball-radius))
+       (< (abs (- (-> first-ball :p :y) (-> second-ball :p :y)))
+          (* 2 params/ball-radius))))
+
+(defn ball-collision
+  [ball balls]
+  (if (some #(ball-collision? ball %) balls)
+    (-> ball
+        (update-in [:v :y] -)
+        (update-in [:v :x] -))
+    ball))
+
 (defn advance-ball
-  [player ball]
-  (-> ball
-      (player-collision player)
-      wall-collision
-      apply-velocity))
+  [field ball]
+  (let [player (:player field)
+        balls  (:ball field)]
+    (-> ball
+        (player-collision player)
+        wall-collision
+        (ball-collision balls)
+        apply-velocity)))
 
 (defn advance-field
   [field]
-  (update-in field [:balls] (partial mapv (partial advance-ball (:player field)))))
+  (update-in field [:balls] (partial mapv (partial advance-ball field))))
 
 (defn advance-fields
   [game-state]
