@@ -20,13 +20,47 @@
 
 ;; game-state-emitter
 
+(defn index-of
+  [pred coll]
+  (some (fn [[i val]] (when (pred val) i))
+        (map-indexed (fn [i val] [i val]) coll)))
+
+(defn player-index
+  [fields player-id]
+  (index-of (fn [field] (= (-> field :player :id) player-id))
+            fields))
+
+(defn put-in-front
+  "Puts the element with the index index in front of the coll when seen
+  as a cyclical seq."
+  [coll index]
+  (concat
+   (drop index coll)
+   (take index coll)))
+
+(defn in-player-order
+  "Shuffles the fields around, so that the one with the
+  player identified with player-id is the first. If player-id is not
+  found, the original fields is returned."
+  [fields player-id]
+  (let [index (player-index fields player-id)]
+    (if index
+      (vec (put-in-front fields index))
+      fields)))
+
+(defn game-state-in-player-order
+  [game-state player-id]
+  (assoc game-state :fields (in-player-order (:fields game-state) player-id)))
+
 (defn game-state-emitter
   [game-state-channel clients-atom]
   (go
    (loop [game-state (<! game-state-channel)]
      (when game-state
-       (doseq [client-chan (vals @clients-atom)]
-         (>! client-chan (pr-str game-state)))
+       (doseq [[player-id client-chan] @clients-atom]
+         (>! client-chan (-> game-state
+                             (game-state-in-player-order player-id)
+                             pr-str)))
        (recur (<! game-state-channel))))
    (println "Exiting game state emitter loop")))
 
