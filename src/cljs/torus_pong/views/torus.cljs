@@ -46,7 +46,7 @@
     (when (> n 0)
       (set! (.-strokeStyle context) "#fff")
       (set! (.-lineWidth context) 10)
-      (let [thetas (for [i (range n)] (+ (/ Math/PI 2) (* (/ i n) (* 2 Math/PI))))]
+      (let [thetas (for [i (range n)] (* (/ i n) (* 2 Math/PI)))]
         (doseq [[theta player] (map vector thetas players)]
           (doto context
             (.beginPath)
@@ -57,7 +57,9 @@
 (defn draw-balls-in-field
   [context s n index field]
   (doseq [ball (:balls field)]
-    (let [theta (* (/ 360.0 n) (- (/ (-> ball :p :x) game-params/game-width) 0.5))
+    (let [theta (+ (* index (/ (* 2 Math/PI) n))
+                   (* (- (/ (-> ball :p :x) game-params/game-width) 0.5)
+                      (/ (* 2 Math/PI) n)))
           [x y] (circle-pos s theta (-> ball :p :y))]
       (doto context
         (.fillRect (- x 5) (- y 5) 10 10)))))
@@ -87,7 +89,6 @@
 
 (defn create!
   []
-  (.log js/console (Math/cos Math/PI))
   (let [canvas (.getElementById js/document "canvas")
         c (chan (sliding-buffer 1))]
     (go (loop [game-state (<! c)]
