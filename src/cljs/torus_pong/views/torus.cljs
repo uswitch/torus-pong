@@ -5,6 +5,8 @@
             [torus-pong.utils :refer [log]]
             [torus-pong.game.params :as game-params]))
 
+;; constants
+
 (def pi
   Math/PI)
 
@@ -14,29 +16,18 @@
 (def two-pi
   (* Math/PI 2))
 
-(defn draw-arena
-  [context s]
-  (set! (.-strokeStyle context) "#fff")
-  (set! (.-lineWidth context) 10)
-  (doto context
-    (.beginPath)
-    (.arc (/ s 2) (/ s 2)
-          (/ s 2)
-          0 (* 2 Math.PI))
-    (.stroke)
-    (.beginPath)
-    (.arc (/ s 2) (/ s 2)
-          (/ s 4)
-          0 (* 2 Math.PI))
-    (.stroke)))
+;; translation helpers
+
+(defn canvas-y
+  [s game-y]
+  (* (+ (/ game-y game-params/game-height) 1)
+     (/ s 4)))
 
 (defn circle-pos
   [s theta y]
-  [(+ (/ s 2) (* (+ (/ y game-params/game-height) 1)
-                 (/ s 4)
+  [(+ (/ s 2) (* (canvas-y s y)
                  (Math/cos (- theta half-pi))))
-   (+ (/ s 2) (* (+ (/ y game-params/game-height) 1)
-                 (/ s 4)
+   (+ (/ s 2) (* (canvas-y s y)
                  (Math/sin (- theta half-pi))))])
 
 (defn moveTo-on-circle
@@ -48,6 +39,22 @@
   [context s theta y]
   (let [[circle-x circle-y] (circle-pos s theta y)]
     (.lineTo context circle-x circle-y)))
+
+;; drawing
+
+(defn draw-arena
+  [context offset s]
+  (set! (.-strokeStyle context) "#fff")
+  (set! (.-lineWidth context) 10)
+  (let [inner-radius (- (canvas-y s 0) 5)
+        outer-radius (+ (canvas-y s game-params/game-height) 5)]
+    (doto context
+      (.beginPath)
+      (.arc offset offset inner-radius 0 two-pi)
+      (.stroke)
+      (.beginPath)
+      (.arc offset offset outer-radius 0 two-pi)
+      (.stroke))))
 
 (defn draw-players
   [context s players]
@@ -87,12 +94,13 @@
   (let [context (.getContext canvas "2d")
         w (.-width canvas)
         h (.-height canvas)
-        s w
+        offset (/ w 2)
+        s (- w 20)
         fields (:fields game-state)
         players (map :player fields)]
     (doto context
       (.clearRect 0 0 w h)
-      (draw-arena s)
+      (draw-arena offset s)
       (draw-players s players)
       (draw-balls s fields))))
 
