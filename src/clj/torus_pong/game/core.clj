@@ -177,8 +177,8 @@
         (player-collision player)
         wall-collision
         (ball-collision balls)
-        (safe-ball player)
-        apply-velocity)))
+        apply-velocity
+        (safe-ball player))))
 
 (defn count-player-collisions
   [player balls]
