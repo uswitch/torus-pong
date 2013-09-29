@@ -148,7 +148,6 @@
       (draw-last-winner offset (:last-winner game-state)))
     (when (and (:play-sound game-state) @play-sounds)
       (.play (.getElementById js/document "boop")))
-    (.log js/console (:new-winner game-state))
     (when (:new-winner game-state)
       (.log js/console "playing winner")
       (.play (.getElementById js/document "winner")))))
