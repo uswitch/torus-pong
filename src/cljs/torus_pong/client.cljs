@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :as m :refer [go]])
   (:require [cljs.core.async :refer [alts! >! <! timeout close!]]
             [cljs.reader :as reader]
-            [torus-pong.utils :refer [log]]
+            [torus-pong.utils :refer [log host]]
             [torus-pong.async.websocket :as websocket]
             [torus-pong.async.utils :refer [event-chan map-chan]]
             [torus-pong.views.main]))
@@ -42,9 +42,6 @@
 
             command-chan
             (>! ws-in v))))))
-
-(def host
-  (aget js/window "location" "host"))
 
 (defn ^:export run
   []
