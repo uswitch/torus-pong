@@ -1,9 +1,18 @@
 (ns torus-pong.views.torus
-  (:require-macros [cljs.core.async.macros :as m :refer [go]])
-  (:require [cljs.core.async :refer [chan sliding-buffer alts! >! <! timeout close!]]
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [cljs.core.async
+             :refer [chan sliding-buffer alts! >! <! timeout close!]]
             [torus-pong.utils :refer [log]]
-            [torus-pong.async.utils :refer [event-chan]]
             [torus-pong.game.params :as game-params]))
+
+(def pi
+  Math/PI)
+
+(def half-pi
+  (/ Math/PI 2))
+
+(def two-pi
+  (* Math/PI 2))
 
 (defn draw-arena
   [context s]
@@ -25,10 +34,10 @@
   [s theta y]
   [(+ (/ s 2) (* (+ (/ y game-params/game-height) 1)
                  (/ s 4)
-                 (Math/cos theta)))
+                 (Math/cos (- theta half-pi))))
    (+ (/ s 2) (* (+ (/ y game-params/game-height) 1)
                  (/ s 4)
-                 (Math/sin theta)))])
+                 (Math/sin (- theta half-pi))))])
 
 (defn moveTo-on-circle
   [context s theta y]
@@ -50,8 +59,10 @@
         (doseq [[theta player] (map vector thetas players)]
           (doto context
             (.beginPath)
-            (moveTo-on-circle s theta (- (:position player) game-params/paddle-height))
-            (lineTo-on-circle s theta (+ (:position player) game-params/paddle-height))
+            (moveTo-on-circle
+             s theta (- (:position player) game-params/paddle-height))
+            (lineTo-on-circle
+             s theta (+ (:position player) game-params/paddle-height))
             (.stroke)))))))
 
 (defn draw-balls-in-field
@@ -83,9 +94,7 @@
       (.clearRect 0 0 w h)
       (draw-arena s)
       (draw-players s players)
-      (draw-balls s fields))
-
-    ))
+      (draw-balls s fields))))
 
 (defn create!
   []
