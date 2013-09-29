@@ -1,6 +1,6 @@
 (ns torus-pong.game.params)
 
-(def paddle-height 100)
+(def paddle-height 300)
 (def paddle-width 20)
 (def ball-radius 10)
 (def ball-speed 30)
