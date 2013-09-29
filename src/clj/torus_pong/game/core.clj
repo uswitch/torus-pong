@@ -7,7 +7,7 @@
             :id id}
    :balls [{:p {:x  (int (rand params/game-width))
                 :y  (int (rand params/game-height))}
-            :v  {:x 100 :y 100}}]})
+            :v  {:x 1 :y 1}}]})
 
 (def initial-game-state
   {:fields []})
@@ -73,8 +73,7 @@
 (defn invert-velocity
   [ball]
   (-> ball
-      (update-in [:v :x] -)
-      (update-in [:v :y] -)))
+      (update-in [:v :x] -)))
 
 (defn player-collision
   [ball player]
@@ -100,8 +99,8 @@
         current-y-pos (-> ball :p :y)
         current-x-vel (-> ball :v :x)
         current-y-vel (-> ball :v :y)]
-    {:p {:x (+ current-x-pos current-x-vel)
-         :y (+ current-y-pos current-y-vel)}
+    {:p {:x (+ current-x-pos (* params/ball-speed current-x-vel))
+         :y (+ current-y-pos (* params/ball-speed current-y-vel))}
      :v {:x current-x-vel
          :y current-y-vel}}))
 
