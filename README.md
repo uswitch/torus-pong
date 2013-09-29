@@ -24,6 +24,7 @@ This project uses the following fantastic libraries:
 - [jetty7-websockets-async](https://github.com/lynaghk/jetty7-websockets-async) by Kevin Lynagh
 - [core.async](https://github.com/clojure/core.async) by Rich Hickey and contributors
 - [ring](https://github.com/ring-clojure/ring) by James Reeves
+- sound effects sourced from http://www.freesound.org/
 
 ## License
 
