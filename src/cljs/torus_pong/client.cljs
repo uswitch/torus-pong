@@ -15,6 +15,8 @@
     (case code
       38 [:player/up]
       40 [:player/down]
+      87 [:player/up]
+      83 [:player/down]
       nil)))
 
 (defn command-chan
