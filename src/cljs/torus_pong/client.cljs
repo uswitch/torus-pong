@@ -55,7 +55,7 @@
 (defn bind-arrow-click
   [command-chan]
   (go (while true
-        (<! (timeout 25))
+        (<! (timeout 50))
         (case @clicked
           :up   (>! command-chan [:player/up])
           :down (>! command-chan [:player/down])

@@ -19,6 +19,6 @@
 
 (def max-commands-per-tick 10)
 
-(def distance-paddle-moves-per-tick 20 #_(/ (- game-height paddle-height)
+(def distance-paddle-moves-per-tick 40 #_(/ (- game-height paddle-height)
                                        (/ ms-to-move-paddle-from-top-to-bottom tick-ms)
                                         max-commands-per-tick))
