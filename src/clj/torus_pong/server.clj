@@ -39,7 +39,7 @@
 (defn find-available-game
   [games]
   (when-let [game (last games)]
-    (when (< (count @(:clients game)) 10)
+    (when (< (count @(:clients game)) 8)
       game)))
 
 (defn start-new-game!
