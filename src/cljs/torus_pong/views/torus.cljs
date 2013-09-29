@@ -56,15 +56,25 @@
       (.arc offset offset outer-radius 0 two-pi)
       (.stroke))))
 
+(defn draw-score
+  [context offset s theta score]
+  (let [[x y] (circle-pos offset s theta -300)]
+    (.fillText context score x y)))
+
 (defn draw-players
   [context offset s players]
   (let [n (count players)]
     (when (> n 0)
       (set! (.-strokeStyle context) "#fff")
       (set! (.-lineWidth context) 10)
+      (set! (.-fillStyle context) "#fff")
+      (set! (.-font context) "bold 16px Arial")
+      (set! (.-textAlign context) "center")
+      (set! (.-textBaseline context) "middle")
       (let [thetas (for [i (range n)] (* (/ i n) (* 2 Math/PI)))]
         (doseq [[theta player] (map vector thetas players)]
           (doto context
+            (draw-score offset s theta (:score player))
             (.beginPath)
             (moveTo-on-circle
              offset s theta (- (:position player) (/ game-params/paddle-height 2)))
