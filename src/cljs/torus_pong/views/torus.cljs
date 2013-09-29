@@ -3,7 +3,9 @@
   (:require [cljs.core.async
              :refer [chan sliding-buffer alts! >! <! timeout close!]]
             [torus-pong.utils :refer [log]]
-            [torus-pong.game.params :as game-params]))
+            [torus-pong.game.params :as game-params]
+            [goog.events]
+            [goog.dom]))
 
 ;; constants
 
@@ -127,6 +129,8 @@
       (set! (.-lineWidth context) 10)
       (doall (map-indexed (partial draw-balls-in-field context offset s n) fields)))))
 
+(def play-sounds (atom true))
+
 (defn update-view
   [canvas game-state]
   (let [context (.getContext canvas "2d")
@@ -142,13 +146,15 @@
       (draw-players offset s players)
       (draw-balls offset s fields)
       (draw-last-winner offset (:last-winner game-state)))
-    (when (:play-sound game-state)
+    (when (and (:play-sound game-state) @play-sounds)
       (.play (.getElementById js/document "boop")))))
 
 (defn create!
   []
   (let [canvas (.getElementById js/document "canvas")
         c (chan (sliding-buffer 1))]
+    (goog.events/listen (goog.dom/getElement "mute") "click"
+                      #(swap! play-sounds false?))
     (go (loop [game-state (<! c)]
           (update-view canvas game-state)
           (recur (<! c))))

@@ -6,7 +6,7 @@
 (def ball-speed 30)
 (def scoring :hits)
 
-(def winning-score 10)
+(def winning-score 20)
 
 (def ms-to-move-paddle-from-top-to-bottom 3000)
 
