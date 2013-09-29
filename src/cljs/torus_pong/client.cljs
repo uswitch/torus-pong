@@ -5,7 +5,7 @@
             [torus-pong.utils :refer [log host]]
             [torus-pong.async.websocket :as websocket]
             [torus-pong.async.utils :refer [event-chan map-chan]]
-            [torus-pong.views.main]))
+            [torus-pong.views.torus]))
 
 ;; commands
 
@@ -24,20 +24,17 @@
 ;; client process
 
 (defn spawn-client-process!
-  [ws-in ws-out command-chan main-view]
+  [ws-in ws-out command-chan torus-view]
   (go (while true
         (let [[v c] (alts! [ws-out command-chan])]
           (condp = c
 
             ws-out
             (do
-              (log ["Got message" v])
               (let [[type data] v]
                 (case type
                   :message (let [game-state (reader/read-string data)]
-                             (log game-state)
-                             ;(>! main-view player-game-state)
-                             )
+                             (>! torus-view game-state))
 
                   (log ["Silently ignoring" v]))))
 
@@ -47,6 +44,6 @@
 (defn ^:export run
   []
   (.log js/console "pong!")
-  (let [main-view (torus-pong.views.main/create!)
+  (let [torus-view (torus-pong.views.torus/create!)
         {:keys [in out]} (websocket/connect! (str "ws://" host))]
-    (spawn-client-process! in out (command-chan) main-view)))
+    (spawn-client-process! in out (command-chan) torus-view)))
