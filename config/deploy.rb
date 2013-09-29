@@ -28,6 +28,7 @@ namespace :deploy do
   end
 
   after "deploy:symlink", "deploy:build_uber_jar"
+  after "deploy:restart", "tagging:push_deploy_tag"
 end
 
 namespace :api do

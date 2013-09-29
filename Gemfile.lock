@@ -7,8 +7,6 @@ GEM
       net-sftp (>= 2.0.0)
       net-ssh (>= 2.0.14)
       net-ssh-gateway (>= 1.1.0)
-    capistrano-deploy-tagger (2.2.0)
-      capistrano (>= 1.0.0)
     highline (1.6.19)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
@@ -24,4 +22,3 @@ PLATFORMS
 DEPENDENCIES
   bundler
   capistrano (= 2.9.0)
-  capistrano-deploy-tagger
