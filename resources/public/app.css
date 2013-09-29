@@ -23,6 +23,7 @@ body {
 #controls img {
     margin-bottom: 10px;
     -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 #container {
