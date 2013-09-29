@@ -57,9 +57,10 @@
       (.stroke))))
 
 (defn draw-score
-  [context offset s theta score]
+  [context offset s theta score name]
   (let [[x y] (circle-pos offset s theta (/ (- s) 2))]
-    (.fillText context score x y)))
+    (.fillText context name x (- y 10))
+    (.fillText context score x (+ y 10))))
 
 (defn draw-players
   [context offset s players]
@@ -74,13 +75,23 @@
       (let [thetas (for [i (range n)] (* (/ i n) (* 2 Math/PI)))]
         (doseq [[theta player] (map vector thetas players)]
           (doto context
-            (draw-score offset s theta (:score player))
+            (draw-score offset s theta (:score player) (:name player))
             (.beginPath)
             (moveTo-on-circle
              offset s theta (- (:position player) (/ game-params/paddle-height 2)))
             (lineTo-on-circle
              offset s theta (+ (:position player) (/ game-params/paddle-height 2)))
             (.stroke)))))))
+
+(defn draw-last-winner
+  [context offset last-winner]
+  (when last-winner
+    (set! (.-fillStyle context) "#fff")
+    (set! (.-font context) "bold 16px Arial")
+    (set! (.-textAlign context) "center")
+    (set! (.-textBaseline context) "middle")
+    (.fillText context "Last Winner:" offset (- offset 10))
+    (.fillText context last-winner offset (+ offset 10))))
 
 (defn draw-balls-in-field
   [context offset s n index field]
@@ -118,7 +129,8 @@
       (.clearRect 0 0 w h)
       (draw-arena offset s)
       (draw-players offset s players)
-      (draw-balls offset s fields))))
+      (draw-balls offset s fields)
+      (draw-last-winner offset (:last-winner game-state)))))
 
 (defn create!
   []
