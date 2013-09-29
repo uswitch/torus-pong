@@ -64,14 +64,14 @@
     (.save context)
     (.translate context x y)
     (.rotate context theta)
-    (set! (.-font context) "16px Arial")
+    (set! (.-font context) "10px \"Press Start 2P\"")
     (.fillText context name 0 0)
     (.restore context))
   (let [[x y] (circle-pos offset s theta (* -0.1 game-params/game-height))]
     (.save context)
     (.translate context x y)
     (.rotate context theta)
-    (set! (.-font context) "bold 16px Arial")
+    (set! (.-font context) "12px \"Press Start 2P\"")
     (.fillText context score 0 10)
     (.restore context)))
 
@@ -82,7 +82,7 @@
       (set! (.-strokeStyle context) "#fff")
       (set! (.-lineWidth context) 10)
       (set! (.-fillStyle context) "#fff")
-      (set! (.-font context) "bold 16px Arial")
+      (set! (.-font context) "12px \"Press Start 2P\"")
       (set! (.-textAlign context) "center")
       (set! (.-textBaseline context) "middle")
       (let [thetas (for [i (range n)] (* (/ i n) (* 2 Math/PI)))]
@@ -100,10 +100,11 @@
   [context offset last-winner]
   (when last-winner
     (set! (.-fillStyle context) "#fff")
-    (set! (.-font context) "bold 16px Arial")
+    (set! (.-font context) "10px \"Press Start 2P\"")
     (set! (.-textAlign context) "center")
     (set! (.-textBaseline context) "middle")
     (.fillText context "Last Winner:" offset (- offset 10))
+    (set! (.-font context) "18px \"Press Start 2P\"")
     (.fillText context last-winner offset (+ offset 10))))
 
 (defn draw-balls-in-field
