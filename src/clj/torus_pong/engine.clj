@@ -20,61 +20,6 @@
 
 ;; game-state-emitter
 
-(comment
-  ;; transformation of game-state to player-game-state
-
-  {:fields [{:player {:position 500, :id 1}}
-            {:player {:position 500, :id 2}}]}
-
-  ;; =>
-
-  {:player {:position 500, :id 2},
-   :left-opponent {:position 500, :id 1},
-   :right-opponent {:position 500, :id 1}}
-
-  )
-
-
-(defn player-game-state
-  [[left-field player-field right-field]]
-  {:player         player-field
-   :left-opponent  left-field
-   :right-opponent right-field})
-
-(defn player-game-states
-  "Given a game-state, return a player game state for each player."
-  [game-state]
-  (let [fields   (:fields game-state)
-        nplayers (count fields)]
-    (->> (apply concat (repeat fields))
-         (partition 3 1)
-         (take nplayers)
-         (map player-game-state))))
-
-(comment
-
-  (player-game-states {:fields [{:player {:position 500, :id 1}}]})
-
-  (player-game-states {:fields [{:player {:position 500, :id 1}}
-                                {:player {:position 500, :id 2}}]} )
-
-
-
-  (player-game-states  {:fields [{:player {:position 500, :id 1}}
-                                 {:player {:position 500, :id 2}}
-                                 {:player {:position 500, :id 3}}
-                                 ;{:player {:position 500, :id 4}}
-                                 ]})
-
-
-  (player-game-states {:fields [{:player {:position 500, :id 6}, :balls [{:p {:x 866, :y 400}, :v {:x 1, :y 1}}]} {:player {:position 500, :id 8}, :balls [{:p {:x 179, :y 670}, :v {:x 1, :y 1}}]}]})
-
-
-  (doseq [ps ]
-    (println (-> ps :player :id)))
-  )
-
-
 (defn game-state-emitter
   [game-state-channel clients-atom]
   (go
