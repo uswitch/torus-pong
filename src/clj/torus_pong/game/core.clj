@@ -68,8 +68,8 @@
   [ball player]
   (let [x-distance (abs (- (/ params/game-width 2) (-> ball :p :x)))
         y-distance (abs (- (player :position) (-> ball :p :y)))]
-    (and (< x-distance (+ (/ params/paddle-width 2) params/ball-radius))
-         (< y-distance (+ (/ params/paddle-height 2) params/ball-radius)))))
+    (and (<= x-distance (+ (/ params/paddle-width 2) params/ball-radius))
+         (<= y-distance (+ (/ params/paddle-height 2) params/ball-radius)))))
 
 (defn invert-velocity
   [ball]
@@ -121,7 +121,7 @@
      :v {:x current-x-vel
          :y current-y-vel}}))
 
-(defn safe-ball-from-player
+(defn safe-ball-from-player-x
   [ball player]
   (if (player-collision? ball player)
     (if (< (-> ball :p :x) (/ params/game-width 2))
@@ -132,6 +132,24 @@
                                 params/ball-radius
                                 (/ params/paddle-width 2))))
     ball))
+
+(defn safe-ball-from-player-y
+  [ball player]
+  (if (player-collision? ball player)
+    (if (< (-> ball :p :y) (:position player))
+      (assoc-in ball [:p :y] (- (:position player)
+                                params/ball-radius
+                                (/ params/paddle-height 2)))
+      (assoc-in ball [:p :y] (+ (:position player)
+                                params/ball-radius
+                                (/ params/paddle-height 2))))
+    ball))
+
+(defn safe-ball-from-player
+  [ball player]
+  (-> ball
+      (safe-ball-from-player-x player)
+      (safe-ball-from-player-y player)))
 
 (defn constraint
   [lo hi val]

@@ -90,13 +90,19 @@
                       (/ (* 2 Math/PI) n)))
           [x y] (circle-pos offset s theta (-> ball :p :y))]
       (doto context
-        (.fillRect (- x 5) (- y 5) 10 10)))))
+        (.beginPath)
+        (moveTo-on-circle
+         offset s theta (- (-> ball :p :y) game-params/ball-radius))
+        (lineTo-on-circle
+         offset s theta (+ (-> ball :p :y) game-params/ball-radius))
+        (.stroke)))))
 
 (defn draw-balls
   [context offset s fields]
   (let [n (count fields)]
     (when (> n 0)
-      (set! (.-fillStyle context) "#fff")
+      (set! (.-strokeStyle context) "#fff")
+      (set! (.-lineWidth context) 10)
       (doall (map-indexed (partial draw-balls-in-field context offset s n) fields)))))
 
 (defn update-view
