@@ -65,21 +65,39 @@
   (if (< 0 i) i
       (- i)))
 
+(defn force-negative
+  [val]
+  (if (< val 0)
+    val
+    (- val)))
+
+(defn force-positive
+  [val]
+  (if (< val 0)
+    (- val)
+    val))
+
+(defn player-x-collision?
+  [ball player]
+  (let [x-distance (abs (- (/ params/game-width 2) (-> ball :p :x)))]
+    (<= x-distance (+ (/ params/paddle-width 2) params/ball-radius))))
+
+(defn player-y-collision?
+  [ball player]
+  (let [y-distance (abs (- (player :position) (-> ball :p :y)))]
+    (<= y-distance (+ (/ params/paddle-height 2) params/ball-radius))))
+
 (defn player-collision?
   [ball player]
-  (let [x-distance (abs (- (/ params/game-width 2) (-> ball :p :x)))
-        y-distance (abs (- (player :position) (-> ball :p :y)))]
-    (and (<= x-distance (+ (/ params/paddle-width 2) params/ball-radius))
-         (<= y-distance (+ (/ params/paddle-height 2) params/ball-radius)))))
-
-(defn invert-velocity
-  [ball]
-  (update-in ball [:v :x] -))
+  (and (player-x-collision? ball player)
+       (player-y-collision? ball player)))
 
 (defn player-collision
   [ball player]
   (if (player-collision? ball player)
-    (invert-velocity ball)
+    (if (< (-> ball :p :x) (/ params/game-width 2))
+      (update-in ball [:v :x] force-negative)
+      (update-in ball [:v :x] force-positive))
     ball))
 
 (defn wall-collision?
@@ -91,7 +109,9 @@
 (defn wall-collision
   [ball]
   (if (wall-collision? ball)
-    (update-in ball [:v :y] -)
+    (if (< (-> ball :p :y) (/ params/game-height 2))
+      (update-in ball [:v :y] force-positive)
+      (update-in ball [:v :y] force-negative))
     ball))
 
 (defn ball-collision?
@@ -139,53 +159,6 @@
      :v {:x current-x-vel
          :y current-y-vel}}))
 
-(defn safe-ball-from-player-x
-  [ball player]
-  (if (player-collision? ball player)
-    (if (< (-> ball :p :x) (/ params/game-width 2))
-      (assoc-in ball [:p :x] (- (/ params/game-width 2)
-                                params/ball-radius
-                                (/ params/paddle-width 2)))
-      (assoc-in ball [:p :x] (+ (/ params/game-width 2)
-                                params/ball-radius
-                                (/ params/paddle-width 2))))
-    ball))
-
-(defn safe-ball-from-player-y
-  [ball player]
-  (if (player-collision? ball player)
-    (if (< (-> ball :p :y) (:position player))
-      (assoc-in ball [:p :y] (- (:position player)
-                                params/ball-radius
-                                (/ params/paddle-height 2)))
-      (assoc-in ball [:p :y] (+ (:position player)
-                                params/ball-radius
-                                (/ params/paddle-height 2))))
-    ball))
-
-(defn safe-ball-from-player
-  [ball player]
-  (-> ball
-      (safe-ball-from-player-x player)
-      (safe-ball-from-player-y player)))
-
-(defn constraint
-  [lo hi val]
-  (max (min val hi) lo))
-
-(defn safe-ball-from-wall
-  [ball]
-  (if (wall-collision? ball)
-    (update-in ball [:p :y] (partial constraint 0 params/game-height))
-    ball))
-
-(defn safe-ball
-  "Removes ball from walls and players"
-  [ball player]
-  (-> ball
-      (safe-ball-from-player player)
-      safe-ball-from-wall))
-
 (defn advance-ball
   [field ball]
   (let [balls  (:ball field)
@@ -194,8 +167,7 @@
         (player-collision player)
         wall-collision
         (ball-collision balls)
-        apply-velocity
-        (safe-ball player))))
+        apply-velocity)))
 
 (defn count-player-collisions
   [player balls]
