@@ -31,11 +31,11 @@
 
             ws-out
             (do
-              (log ["Got message" v])
+;              (log ["Got message" v])
               (let [[type data] v]
                 (case type
                   :message (let [player-game-state (reader/read-string data)]
-                             (log player-game-state)
+ ;                            (log player-game-state)
                              (>! main-view player-game-state))
 
                   (log ["Silently ignoring" v]))))

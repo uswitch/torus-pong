@@ -5,9 +5,10 @@
   [id]
   {:player {:position (/ params/game-height 2)
             :id id}
-   :balls [{:p {:x  (int (rand params/game-width))
+   :balls [{:id (str (java.util.UUID/randomUUID))
+            :p {:x  (int (rand params/game-width))
                 :y  (int (rand params/game-height))}
-            :v  {:x 1 :y 1}}]})
+            :v  {:x 25 :y 25}}]})
 
 (def initial-game-state
   {:fields []})
@@ -99,8 +100,14 @@
         current-y-pos (-> ball :p :y)
         current-x-vel (-> ball :v :x)
         current-y-vel (-> ball :v :y)]
+<<<<<<< HEAD
     {:p {:x (+ current-x-pos (* params/ball-speed current-x-vel))
          :y (+ current-y-pos (* params/ball-speed current-y-vel))}
+=======
+    {:id (:id ball)
+     :p {:x (+ current-x-pos current-x-vel)
+         :y (+ current-y-pos current-y-vel)}
+>>>>>>> Half-broken dom implementation
      :v {:x current-x-vel
          :y current-y-vel}}))
 
