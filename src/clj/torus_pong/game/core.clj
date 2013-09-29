@@ -169,9 +169,19 @@
         (ball-collision balls)
         apply-velocity)))
 
+;; Scoring
+
 (defn count-player-collisions
   [player balls]
-  (reduce (fn [agg ball] (if (player-collision? ball player) (inc agg) agg)) 0 balls))
+  (reduce (fn [agg ball] (if (and (player-collision? ball player)
+                                 (or (and (< (-> ball :p :x) (/ params/game-width 2))
+                                          (> (-> ball :v :x) 0))
+                                     (and (>= (-> ball :p :x) (/ params/game-width 2))
+                                          (< (-> ball :v :x) 0))))
+                          (inc agg)
+                          agg))
+          0
+          balls))
 
 (defn advance-score-on-hits
   [field]
@@ -264,8 +274,8 @@
   tick"
   [game-state commands]
   (let [new-game-state (-> game-state
-                           (handle-commands commands)
                            (apply-scoring)
+                           (handle-commands commands)
                            (check-for-winner)
                            (advance-fields)
                            (play-sounds)
