@@ -1,5 +1,3 @@
-require 'capistrano/deploy/tagger'
-
 set :application, "torus-pong"
 set :user, "deploy"
 set :keep_releases, 3
@@ -13,9 +11,6 @@ set :use_sudo, false
 set :deploy_via, :remote_cache
 set :scm_verbose, true
 set :normalize_asset_timestamps, false
-
-set :latest_deploy_tag, "clojurecup13"
-set :update_deploy_timestamp_tags, false
 
 server '146.185.148.131', :app, :web, :db, :primary => true
 
@@ -71,5 +66,14 @@ namespace :nginx do
 
   task :reload do
     sudo "/etc/init.d/nginx reload"
+  end
+end
+
+namespace :tagging do
+  task :push_deploy_tag do
+    user = `git config --get user.name`.chomp
+    email = `git config --get user.email`.chomp
+    puts `git tag "clojurecup13" #{current_revision} -m "Deployed by #{user} <#{email}>"`
+    puts `git push --tags origin`
   end
 end
