@@ -77,7 +77,6 @@
   [games]
   (println "Pruning empty games")
   (let [games-by-status (group-by game-status games)]
-    (clojure.pprint/pprint games-by-status)
     (doseq [game (:empty games-by-status)]
       (stop-game! game))
     (vec (:active games-by-status))))

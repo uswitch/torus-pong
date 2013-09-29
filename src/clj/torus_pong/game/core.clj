@@ -284,7 +284,6 @@
                         (assoc :new-winner true)
                         (assoc :last-winner last-winner)
                         reset-scores)]
-      (println new-state)
       new-state)
     (dissoc game-state :new-winner)))
 
