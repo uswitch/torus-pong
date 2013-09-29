@@ -2,9 +2,10 @@
   (:require [torus-pong.game.params :as params]))
 
 (defn initial-field-state
-  [id]
+  [id name]
   {:player {:position (/ params/game-height 2)
             :id id
+            :name name
             :score 0}
    :balls [{:p {:x  (int (rand params/game-width))
                 :y  (int (rand params/game-height))}
@@ -40,8 +41,8 @@
          (vec (remove #(= (-> % :player :id) id) (:fields game-state)))))
 
 (defmethod handle-command :player/join
-  [game-state [command id]]
-  (update-in game-state [:fields] conj (initial-field-state id)))
+  [game-state [command id name]]
+  (update-in game-state [:fields] conj (initial-field-state id name)))
 
 (defmethod handle-command :player/up
   [game-state [command id]]
@@ -242,6 +243,31 @@
       :fields
       (mapv update-ball-field-partition field-partitions))))
 
+(defn winner?
+  [player]
+  (>= (-> player :score) params/winning-score))
+
+(defn any-winners?
+  [fields]
+  (some (fn [field] (if (winner? (:player field))
+                     (-> field :player :name))) fields))
+
+(defn reset-field-score
+  [field]
+  (update-in field [:player :score] (constantly 0)))
+
+(defn reset-scores
+  [game-state]
+  (update-in game-state [:fields] (partial mapv reset-field-score)))
+
+(defn check-for-winner
+  [game-state]
+  (if-let [last-winner (any-winners? (:fields game-state))]
+    (-> game-state
+        (assoc :last-winner last-winner)
+        reset-scores)
+    game-state))
+
 (defn advance
   "Given a game-state and some inputs, advance the game-state one
   tick"
@@ -249,6 +275,7 @@
   (let [new-game-state (-> game-state
                            (handle-commands commands)
                            (apply-scoring)
+                           (check-for-winner)
                            (advance-fields)
                            update-ball-fields)]
     new-game-state))

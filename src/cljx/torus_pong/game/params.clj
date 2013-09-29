@@ -6,6 +6,8 @@
 (def ball-speed 30)
 (def scoring :hits)
 
+(def winning-score 10)
+
 (def ms-to-move-paddle-from-top-to-bottom 3000)
 
 (def game-height 1000)
