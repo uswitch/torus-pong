@@ -34,31 +34,13 @@
              (swap! clients dissoc id))))
      (println "Client process terminating"))))
 
-(defn spawn-just-listen-process!
-  [ws-in ws-out listen-clients]
-  (let [in (chan (sliding-buffer 1))]
-    (swap! listen-clients assoc ws-out in)
-    (forward! in ws-in)
-    (go
-     (<! ws-out)
-     (swap! listen-clients dissoc ws-out)
-     (println "Just listen process terminating"))))
-
 (defn spawn-connection-process!
-  [conn-chan command-chan clients listen-clients]
+  [conn-chan command-chan clients]
   (go (loop [{:keys [request in out] :as conn} (<! conn-chan)]
         (when conn
-          (condp = (:uri request)
-            "/" (let [id (next-id)]
-                  (println "Spawning new client process for"
-                           (:remote-addr request))
-                  (spawn-client-process!
-                   request in out command-chan id clients)
-                  (recur (<! conn-chan)))
-            "/just-listen" (do
-                             (println "Spawning just listen process")
-                             (spawn-just-listen-process!
-                              in out listen-clients)
-                             (recur (<! conn-chan)))
+          (let [id (next-id)]
+            (println "Spawning new client process for"
+                     (:remote-addr request))
+            (spawn-client-process! request in out command-chan id clients)
             (recur (<! conn-chan)))))
       (println "Connection process terminating")))

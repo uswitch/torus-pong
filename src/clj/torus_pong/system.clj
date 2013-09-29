@@ -16,7 +16,7 @@
    ;; channel for all commands from clients
    :command-chan    (chan)
 
-      ;; channel for communicating the game state
+   ;; channel for communicating the game state
    :game-state-chan (chan)
 
    :clients         (atom {})
@@ -30,18 +30,12 @@
   [system]
   (println "Starting system")
 
-  (let [individual-game-state-chan (chan)
-        full-game-state-chan (chan)
-        game-state-chan (broadcast individual-game-state-chan
-                                   full-game-state-chan)]
-    (forward! (:game-state-chan system) game-state-chan)
-    (engine/spawn-engine-process! (:command-chan system) (:game-state-chan system))
-    (engine/game-state-emitter      individual-game-state-chan (:clients system))
-    (engine/full-game-state-emitter full-game-state-chan (:listen-clients system)))
+  (engine/spawn-engine-process! (:command-chan system) (:game-state-chan system))
+  (engine/game-state-emitter    (:game-state-chan system) (:clients system))
+
   (server/spawn-connection-process! (:connection-chan system)
-                                    (:command-chan    system)
-                                    (:clients         system)
-                                    (:listen-clients  system))
+                                    (:command-chan system)
+                                    (:clients system))
 
   (assoc system
     :server (run-jetty server/handler
