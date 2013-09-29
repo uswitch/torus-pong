@@ -141,7 +141,9 @@
       (draw-arena offset s)
       (draw-players offset s players)
       (draw-balls offset s fields)
-      (draw-last-winner offset (:last-winner game-state)))))
+      (draw-last-winner offset (:last-winner game-state)))
+    (when (:play-sound game-state)
+      (.play (.getElementById js/document "boop")))))
 
 (defn create!
   []

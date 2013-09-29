@@ -111,6 +111,23 @@
         (update-in [:v :x] -))
     ball))
 
+(defn collision-in-field?
+  [field]
+  (or (some wall-collision? (:balls field))
+      (some (fn [first-ball] (some (fn [second-ball] (ball-collision? first-ball second-ball)) (:balls field))) (:balls field))
+      (some (fn [ball] (player-collision? ball (:player field))) (:balls field))))
+
+(defn any-collisions?
+  [fields]
+  (some (fn [field]
+          (collision-in-field? field)) fields))
+
+(defn play-sounds
+  [game-state]
+  (if (any-collisions? (:fields game-state))
+    (assoc game-state :play-sound true)
+    (dissoc game-state :play-sound)))
+
 (defn apply-velocity
   [ball]
   (let [current-x-pos (-> ball :p :x)
@@ -186,7 +203,7 @@
 
 (defn advance-score-on-hits
   [field]
-  (update-in field [:player :score] (partial + (count-player-collisions (:player field) (:balls field))) ))
+  (update-in field [:player :score] (partial + (count-player-collisions (:player field) (:balls field)))))
 
 (defmulti apply-scoring
   (fn [game-state]
@@ -277,5 +294,6 @@
                            (apply-scoring)
                            (check-for-winner)
                            (advance-fields)
+                           (play-sounds)
                            update-ball-fields)]
     new-game-state))
