@@ -280,10 +280,13 @@
 (defn check-for-winner
   [game-state]
   (if-let [last-winner (any-winners? (:fields game-state))]
-    (-> game-state
-        (assoc :last-winner last-winner)
-        reset-scores)
-    game-state))
+    (let [new-state (-> game-state
+                        (assoc :new-winner true)
+                        (assoc :last-winner last-winner)
+                        reset-scores)]
+      (println new-state)
+      new-state)
+    (dissoc game-state :new-winner)))
 
 (defn advance
   "Given a game-state and some inputs, advance the game-state one
