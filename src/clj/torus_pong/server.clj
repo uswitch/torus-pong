@@ -22,7 +22,8 @@
   (go
    (loop [msg (<! from)]
      (>! to msg)
-     (recur (<! from)))))
+     (when msg
+       (recur (<! from))))))
 
 (defn spawn-client-process!
   [ws-request ws-in ws-out command-chan id clients]
