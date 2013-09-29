@@ -73,8 +73,7 @@
 
 (defn invert-velocity
   [ball]
-  (-> ball
-      (update-in [:v :x] -)))
+  (update-in ball [:v :x] -))
 
 (defn player-collision
   [ball player]
@@ -94,18 +93,6 @@
     (update-in ball [:v :y] -)
     ball))
 
-(defn apply-velocity
-  [ball]
-  (let [current-x-pos (-> ball :p :x)
-        current-y-pos (-> ball :p :y)
-        current-x-vel (-> ball :v :x)
-        current-y-vel (-> ball :v :y)]
-    {:p {:x (+ current-x-pos (* params/ball-speed current-x-vel))
-         :y (+ current-y-pos (* params/ball-speed current-y-vel))}
-     :v {:x current-x-vel
-         :y current-y-vel}}))
-
-
 (defn ball-collision?
   [first-ball second-ball]
   ;;check to make sure they are not the same ball
@@ -123,6 +110,46 @@
         (update-in [:v :x] -))
     ball))
 
+(defn apply-velocity
+  [ball]
+  (let [current-x-pos (-> ball :p :x)
+        current-y-pos (-> ball :p :y)
+        current-x-vel (-> ball :v :x)
+        current-y-vel (-> ball :v :y)]
+    {:p {:x (+ current-x-pos (* params/ball-speed current-x-vel))
+         :y (+ current-y-pos (* params/ball-speed current-y-vel))}
+     :v {:x current-x-vel
+         :y current-y-vel}}))
+
+(defn safe-ball-from-player
+  [ball player]
+  (if (player-collision? ball player)
+    (if (< (-> ball :p :x) (/ params/game-width 2))
+      (assoc-in ball [:p :x] (- (/ params/game-width 2)
+                                params/ball-radius
+                                (/ params/paddle-width 2)))
+      (assoc-in ball [:p :x] (+ (/ params/game-width 2)
+                                params/ball-radius
+                                (/ params/paddle-width 2))))
+    ball))
+
+(defn constraint
+  [lo hi val]
+  (max (min val hi) lo))
+
+(defn safe-ball-from-wall
+  [ball]
+  (if (wall-collision? ball)
+    (update-in ball [:p :y] (partial constraint 0 params/game-height))
+    ball))
+
+(defn safe-ball
+  "Removes ball from walls and players"
+  [ball player]
+  (-> ball
+      (safe-ball-from-player player)
+      safe-ball-from-wall))
+
 (defn advance-ball
   [field ball]
   (let [balls  (:ball field)
@@ -131,6 +158,7 @@
         (player-collision player)
         wall-collision
         (ball-collision balls)
+        (safe-ball player)
         apply-velocity)))
 
 (defn count-player-collisions
