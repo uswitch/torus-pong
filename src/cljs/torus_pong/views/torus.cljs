@@ -41,7 +41,7 @@
     (.lineTo context circle-x circle-y)))
 
 (defn draw-players
-  [context players s]
+  [context s players]
   (let [n (count players)]
     (when (> n 0)
       (set! (.-strokeStyle context) "#fff")
@@ -54,17 +54,34 @@
             (lineTo-on-circle s theta (+ (:position player) game-params/paddle-height))
             (.stroke)))))))
 
+(defn draw-balls-in-field
+  [context s n index field]
+  (doseq [ball (:balls field)]
+    (let [theta (* (/ 360.0 n) (- (/ (-> ball :p :x) game-params/game-width) 0.5))
+          [x y] (circle-pos s theta (-> ball :p :y))]
+      (doto context
+        (.fillRect (- x 5) (- y 5) 10 10)))))
+
+(defn draw-balls
+  [context s fields]
+  (let [n (count fields)]
+    (when (> n 0)
+      (set! (.-fillStyle context) "#fff")
+      (doall (map-indexed (partial draw-balls-in-field context s n) fields)))))
+
 (defn update-view
   [canvas game-state]
   (let [context (.getContext canvas "2d")
         w (.-width canvas)
         h (.-height canvas)
         s w
-        players (map :player (:fields game-state))]
+        fields (:fields game-state)
+        players (map :player fields)]
     (doto context
       (.clearRect 0 0 w h)
       (draw-arena s)
-      (draw-players players s))
+      (draw-players s players)
+      (draw-balls s fields))
 
     ))
 
