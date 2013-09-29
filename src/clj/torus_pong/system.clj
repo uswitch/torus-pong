@@ -9,18 +9,8 @@
 
 (defn init
   []
-  {
-   ;; channel for new websocket connections
-   :connection-chan (chan)
-
-   ;; channel for all commands from clients
-   :command-chan    (chan)
-
-   ;; channel for communicating the game state
-   :game-state-chan (chan)
-
-   :clients         (atom {})
-   :listen-clients  (atom {})})
+  {;; channel for new websocket connections
+   :connection-chan (chan)})
 
 (defn jetty-configurator
   [system]
@@ -30,12 +20,7 @@
   [system]
   (println "Starting system")
 
-  (engine/spawn-engine-process! (:command-chan system) (:game-state-chan system))
-  (engine/game-state-emitter    (:game-state-chan system) (:clients system))
-
-  (server/spawn-connection-process! (:connection-chan system)
-                                    (:command-chan system)
-                                    (:clients system))
+  (server/spawn-connection-process! (:connection-chan system))
 
   (assoc system
     :server (run-jetty server/handler
@@ -49,8 +34,6 @@
   (println "Stopping system")
   (when-let [server (:server system)]
     (.stop server))
-  (close! (:command-chan system))
-  (close! (:game-state-chan system))
   (close! (:connection-chan system))
 
   (dissoc system :server))
