@@ -4,6 +4,7 @@
 (def paddle-width 20)
 (def ball-radius 10)
 (def ball-speed 30)
+(def scoring :hits)
 
 (def ms-to-move-paddle-from-top-to-bottom 3000)
 

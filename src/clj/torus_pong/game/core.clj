@@ -4,7 +4,8 @@
 (defn initial-field-state
   [id]
   {:player {:position (/ params/game-height 2)
-            :id id}
+            :id id
+            :score 0}
    :balls [{:p {:x  (int (rand params/game-width))
                 :y  (int (rand params/game-height))}
             :v  {:x 1 :y 1}}]})
@@ -124,13 +125,29 @@
 
 (defn advance-ball
   [field ball]
-  (let [player (:player field)
-        balls  (:ball field)]
+  (let [balls  (:ball field)
+        player (:player field)]
     (-> ball
         (player-collision player)
         wall-collision
         (ball-collision balls)
         apply-velocity)))
+
+(defn count-player-collisions
+  [player balls]
+  (reduce (fn [agg ball] (if (player-collision? ball player) (inc agg) agg)) 0 balls))
+
+(defn advance-score-on-hits
+  [field]
+  (update-in field [:player :score] (partial + (count-player-collisions (:player field) (:balls field))) ))
+
+(defmulti apply-scoring
+  (fn [game-state]
+    params/scoring))
+
+(defmethod apply-scoring :hits
+  [game-state]
+  (update-in game-state [:fields] (partial mapv advance-score-on-hits)))
 
 (defn advance-field
   [field]
@@ -185,6 +202,7 @@
   [game-state commands]
   (let [new-game-state (-> game-state
                            (handle-commands commands)
+                           (apply-scoring)
                            (advance-fields)
                            update-ball-fields)]
     new-game-state))
