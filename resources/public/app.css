@@ -10,7 +10,10 @@ body {
     padding: 10px;
 }
 
-
+#description {
+    width: 25%;
+    float: left;
+}
 
 #container {
     width: 100%;
