@@ -1,12 +1,12 @@
 set :application, "torus-pong"
 set :user, "deploy"
 set :keep_releases, 3
-set :deploy_to,           "/mnt/#{application}"
+set :deploy_to,           "/mnt/apps/#{application}"
 set :repository_cache,    "#{application}_cache"
 
 set :repository,  "git@github.com:uswitch/torus-pong.git"
 set :scm, :git
-set :ssh_options, {:forward_agent => true}
+set :ssh_options, {:forward_agent => true, :port => 8008}
 set :use_sudo, false
 set :deploy_via, :remote_cache
 set :scm_verbose, true
