@@ -1,10 +1,10 @@
 set :application, "torus-pong"
 set :user, "deploy"
 set :keep_releases, 3
-set :deploy_to,           "/var/www/#{application}"
+set :deploy_to,           "/mnt/#{application}"
 set :repository_cache,    "#{application}_cache"
 
-set :repository,  "deveo@deveo.com:clojurecup/projects/pong/repositories/git/torus-pong"
+set :repository,  "git@github.com:uswitch/torus-pong.git"
 set :scm, :git
 set :ssh_options, {:forward_agent => true}
 set :use_sudo, false
@@ -12,7 +12,7 @@ set :deploy_via, :remote_cache
 set :scm_verbose, true
 set :normalize_asset_timestamps, false
 
-server '146.185.148.131', :app, :web, :db, :primary => true
+server '172.22.17.238', :app, :web, :db, :primary => true
 
 namespace :deploy do
 
